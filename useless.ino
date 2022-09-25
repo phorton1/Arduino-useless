@@ -1,203 +1,85 @@
 
 #include "useless.h"
 #include <myDebug.h>
+#include <Servo.h>
+#include "buttons.h"
+#include "compass.h"
+#include "ir.h"
+#include "pixels.h"
 
-// OVERIDING DESIGN CONSIDERATION
-//
-// Calling neoPixels.show() while servos are attached causes jitter in the servos.
-//
-// Therefor care must be taken to coordinate the movement of servos with pixel changes.
-//
-// In general we keep the servos detached when not in use.
-// The only place that *might* be a problem is holding up a spring loaded lid.
-//
-// Jitter is unimportant in the wheels.
+// servo pins are re-directed through an array
+// even though by default they are 2..7, so I
+// can change them if the arduino breaks !?!
 
-
-#define WITH_PIXELS     1
-#define WITH_COMPASS    1
-#define WITH_SERVOS     1
-
-
-#if WITH_PIXELS
-    #include "Adafruit_NeoPixel.h"
-    #define NUM_PIXELS   11
-    Adafruit_NeoPixel pixels(NUM_PIXELS, PIN_LED_STRIP, NEO_GRB + NEO_KHZ800);
-#endif
+uint8_t servo_pins[] = {
+  PIN_ARM,
+  PIN_LID,
+  PIN_WHEEL_FL,
+  PIN_WHEEL_BL,
+  PIN_WHEEL_BR,
+  PIN_WHEEL_FR,
+  // PIN_UNUSED_SERVO,
+};
 
 
-#if WITH_COMPASS
-    #include <Wire.h>
-    #include "HMC5883L.h"
-
-    #define WITH_CALIBRATION  0
-
-    #define BOCAS_DECLINATION  3.4
-    #define BOCAS_NORTH 9.4048
-    #define BOCAS_WEST  82.2692
-
-    // true north is +3.4 degrees to the right of magnetic north
-
-    HMC5883L compass;
-
-    static int heading = 237;
-
-    #define DEFAULT_X_MIN  -354
-    #define DEFAULT_X_MAX   318
-    #define DEFAULT_Y_MIN  -567
-    #define DEFAULT_Y_MAX   146
-
-    int16_t compass_x_min = DEFAULT_X_MIN;
-    int16_t compass_x_max = DEFAULT_X_MAX;
-    int16_t compass_y_min = DEFAULT_Y_MIN;
-    int16_t compass_y_max = DEFAULT_Y_MAX;
+Servo servo[NUM_SERVOS];
 
 
-    #if WITH_CALIBRATION
-        #define EEPROM_CALIB_OFFSET  32
-
-        uint32_t in_calibration = 0;
-        int16_t calib_x_min = 32000;
-        int16_t calib_x_max = -32000;
-        int16_t calib_y_min = 32000;
-        int16_t calib_y_max = -32000;
-
-        void initCalibration()
-        {
-            compass_x_min = eepromReadInt(EEPROM_CALIB_OFFSET     , DEFAULT_X_MIN);
-            compass_x_max = eepromReadInt(EEPROM_CALIB_OFFSET + 2 , DEFAULT_X_MAX);
-            compass_y_min = eepromReadInt(EEPROM_CALIB_OFFSET + 4 , DEFAULT_Y_MIN);
-            compass_y_max = eepromReadInt(EEPROM_CALIB_OFFSET + 6 , DEFAULT_Y_MAX);
-            display(0,"initialized calibration  min/max x=%d,%d  y=%d,%d",
-                compass_x_min,
-                compass_x_max,
-                compass_y_min,
-                compass_y_max);
-        }
-    #endif
-#endif
-
-
-
-
-#if WITH_SERVOS
-    #include <Servo.h>
-
-    typedef struct
-    {
-        uint8_t servo_num;
-        uint8_t degrees;
-    } servo_scene;
-
-    int last_button1 = 0;
-
-    int scene = 0;
-    Servo servo[NUM_SERVOS];
-    servo_scene scenes[] = {
-
-        { SERVO_ARM,        90 },
-        { SERVO_ARM,        0 },
-        { SERVO_LID,        50},
-        { SERVO_LID,        0 },
-        #if 1
-            { SERVO_WHEEL_FL,   180 },
-            { SERVO_WHEEL_FL,   0 },
-            { SERVO_WHEEL_FL,   90 },
-            { SERVO_WHEEL_BL,   180 },
-            { SERVO_WHEEL_BL,   0 },
-            { SERVO_WHEEL_BL,   90 },
-            { SERVO_WHEEL_BR,   180 },
-            { SERVO_WHEEL_BR,   0 },
-            { SERVO_WHEEL_BR,   90 },
-            { SERVO_WHEEL_FR,   180 },
-            { SERVO_WHEEL_FR,   0 },
-            { SERVO_WHEEL_FR,   90 },
-        #endif
-    };
-
-    #define NUM_SCENES  (sizeof(scenes) / sizeof(servo_scene))
-
-    uint8_t servo_pins[] = {
-      PIN_ARM,
-      PIN_LID,
-      PIN_WHEEL_FL,
-      PIN_WHEEL_BL,
-      PIN_WHEEL_BR,
-      PIN_WHEEL_FR,
-      // PIN_UNUSED_SERVO,
-    };
-#endif
-
-
-
-int ambient_l = 0;
-int ambient_r = 0;
 
 void setup()
 {
     Serial.begin(115200);
+    display(0,"useless.ino v1.0 started ...",0);
 
     #if WITH_PIXELS
-        pixels.begin();
-        pixels.setBrightness(128);
-        pixels.clear();
-        pixels.show();
-        for (int j=0; j<3; j++)
-        {
-            for (int i=0; i<NUM_PIXELS; i++)
-            {
-                delay(50);
-                pixels.setPixelColor(i,
-                    j==0?255:0,
-                    j==1?255:0,
-                    j==2?255:0);
-                pixels.show();
-            }
-            delay(100);
-        }
-        delay(200);
-        pixels.clear();
-        pixels.show();
+        init_pixels();
+        setLeftPixels(255,0,0);
     #endif
 
-    pinMode(PIN_L_SENSE,INPUT);
-    pinMode(PIN_L_LED,OUTPUT);
-    digitalWrite(PIN_L_LED,1);
-
-    pinMode(PIN_R_SENSE,INPUT);
-    pinMode(PIN_R_LED,OUTPUT);
-    digitalWrite(PIN_R_LED,1);
-
-    delay(15);
-    ambient_l = analogRead(PIN_L_SENSE);
-    ambient_r = analogRead(PIN_R_SENSE);
-    digitalWrite(PIN_L_LED,0);
-    digitalWrite(PIN_R_LED,0);
-
     pinMode(PIN_SWITCH,INPUT_PULLUP);
-    pinMode(PIN_BUTTON1,INPUT_PULLUP);
-    pinMode(PIN_BUTTON2,INPUT_PULLUP);
+    for (int i=0; i<NUM_SERVOS; i++)
+    {
+        servo[i].attach(servo_pins[i]);
+        servo[i].write(i>SERVO_LID?90:0);
+        #if WITH_PIXELS
+            delay(100);
+            pixels.setPixelColor(PIXEL_USER + i,0,0,255);
+            pixels.show();
+        #endif
+        delay(100);
+        servo[i].detach();
+    }
 
-    #if WITH_SERVOS
-        for (int i=0; i<NUM_SERVOS; i++)
-        {
-            servo[i].attach(servo_pins[i]);
-            servo[i].write(i>SERVO_LID?90:0);
-            // delay(100);
-            // servo[i].detach();
-        }
+    #if WITH_IR
+        init_ir();
     #endif
 
     #if WITH_COMPASS
-        Wire.begin();
-        display(0,"initializing HMC5883 compass ...",0);
-        compass.initialize();
-        #if WITH_CALIBRATION
-            initCalibration();
-        #endif
+        init_compass();
+    #endif    init_compass();
+
+    #if WITH_PIXELS
+        delay(100);
+        setRightPixels(255,0,0);
+        delay(500);
+        pixels.clear();
+        pixels.show();
     #endif
 }
 
+
+
+bool switch_on = 0;
+
+uint32_t cycle_start = 0;
+bool direction = 0;
+
+bool attached = false;
+int servo0_pos = 0;
+int servo1_pos = 0;
+
+
+#define CYCLE_DELAY  2000
 
 
 void loop()
@@ -208,98 +90,126 @@ void loop()
     if (now > frame_time + 30)
     {
         frame_time = now;
-        digitalWrite(PIN_L_LED,1);
-        digitalWrite(PIN_R_LED,1);
-        delay(1);
 
-        int16_t heading = 0;
+        bool sw = !digitalRead(PIN_SWITCH);
+        if (switch_on != sw)
+        {
+            switch_on = sw;
+            display(0,"switch=%d",sw);
+            cycle_start = now;
+            direction = sw ? 1 : 0;
+        }
 
-        #if WITH_COMPASS
-            int16_t mx = 0;
-            int16_t my = 0;
-            int16_t mz = 0;
-
-            compass.getHeading(&mx, &my, &mz);
-
-            #if WITH_CALIBRATION
-                // save min and max x/y values invariantly in case
-                // we are in calibration
-                if (mx < calib_x_min) calib_x_min = mx;
-                if (mx > calib_x_max) calib_x_max = mx;
-                if (my < calib_y_min) calib_y_min = my;
-                if (my > calib_y_max) calib_y_max = my;
-            #endif
-
-            // scale x and y and determine heading invariantly
-
-            int16_t tx = map(mx,compass_x_min,compass_x_max,-1200,1200);
-            int16_t ty = map(my,compass_y_min,compass_y_max,-1200,1200);
-            float f_heading = atan2(ty,tx) * 180.0/PI;
-
-            int16_t ma = f_heading;
-            ma -= 90;  // my compass is mounted with Y pointing backwards
-            while (ma < 0) ma += 360;
-            while (ma > 360) ma -= 360;
-            heading = ma;
-        #endif
-
-
-        int ir_left = analogRead(PIN_L_SENSE);
-        int ir_right = analogRead(PIN_R_SENSE);
-        int sw = digitalRead(PIN_SWITCH)?0:500;
-        int button1 = digitalRead(PIN_BUTTON1)?0:500;
-        int button2 = digitalRead(PIN_BUTTON2)?0:500;
-        digitalWrite(PIN_L_LED,0);
-        digitalWrite(PIN_R_LED,0);
-        display(0,"%d,%d,%d,%d,%d,%d",sw,button1,button2,heading,ir_left,ir_right);
-
-        #if WITH_PIXELS
-            #define TEMP_IR_MIN    400
-
-            int16_t lp = map(ir_left,   ambient_l+50,1023,   0,255);
-            int16_t rp = map(ir_right,  ambient_r+50,1023,   0,255);
-            if (lp < 0) lp = 0;
-            if (rp < 0) rp = 0;
-
-
-            bool show_leds = false;
-            static int16_t last_lp = 0;
-            static int16_t last_rp = 0;
-
-            if (last_lp != lp)
+        else if (cycle_start)
+        {
+            if (!direction &&
+                servo0_pos <= 0 &&
+                servo1_pos <= 0)
             {
-                last_lp = lp;
-                pixels.setPixelColor(6, lp, 0, 0);
-                show_leds = true;
+                display(0,"done",0);
+                cycle_start = 0;
+                servo0_pos = 0;
+                servo1_pos = 0;
+                attached = false;
+                servo[0].detach();
+                servo[1].detach();
+                #if WITH_PIXELS
+                    pixels.clear();
+                    pixels.show();
+                #endif
             }
-            if (last_rp != rp)
+            else if (direction &&
+                     servo0_pos >= 90)
             {
-                last_rp = rp;
-                pixels.setPixelColor(10, rp, 0, 0);
-                show_leds = true;
+                display(0,"at 90",0);
+                cycle_start = now;
+                direction = 0;
             }
-            if (show_leds)
-                pixels.show();
-
-        #endif
-
-        #if WITH_SERVOS
-            if (button1 != last_button1)
+            else if (now > cycle_start + CYCLE_DELAY)
             {
-                last_button1 = button1;
-                if (button1)
+                if (!attached)
                 {
-                    // servo[scenes[scene].servo_num].detach();
-                    scene++;
-                    if (scene >= NUM_SCENES) scene=0;
-                    int servo_num = scenes[scene].servo_num;
-                    int degrees = scenes[scene].degrees;
-                    int pin = servo_pins[servo_num];
-                    // display(0,"scene(%d)  servo[%d].write(%d)   pin(%d)",scene,servo_num,degrees,pin);
-                    // servo[servo_num].attach(servo_pins[servo_num]);
-                    servo[servo_num].write(degrees);
+                    attached = true;
+                    servo[1].attach(servo_pins[1]);
+                    servo[0].attach(servo_pins[0]);
+                }
+                float diff = now - cycle_start - CYCLE_DELAY;
+                float pct = diff / 100.0;
+                if (!direction) pct = 1 - pct;
+
+                float s0 = pct * 90;
+                float s1 = pct * 35;
+                int i0 = s0;
+                int i1 = s1;
+
+                #if 1
+                    Serial.print(diff);
+                    Serial.print(" ");
+                    Serial.print(pct,3);
+                    Serial.print(" ");
+                    Serial.print(i0);
+                    Serial.print(" ");
+                    Serial.println(i1);
+                #endif
+
+                #if WITH_PIXELS
+                    float leds = 128 * pct;
+                    for (int i=0; i<NUM_PIXELS; i++)
+                    {
+                        if (i != 6 && i != 10)
+                        pixels.setPixelColor(i,0,0,leds);
+                    }
+                    pixels.show();
+                #endif
+
+                if (servo0_pos != i0)
+                {
+                    servo0_pos = i0;
+                    servo[0].write(servo0_pos);
+                }
+                if (servo1_pos != i1)
+                {
+                    servo1_pos = i1;
+                    servo[1].write(servo1_pos);
                 }
             }
+        }
+
+
+        // other stuff
+
+        #if WITH_IR
+            int16_t ir_left = 0;
+            int16_t ir_right = 0;
+            static int16_t last_left = 0;
+            static int16_t last_right = 0;
+            read_ir(&ir_left,&ir_right);
+
+            #if WITH_PIXELS
+                bool show_leds = false;
+                if (last_left != ir_left)
+                {
+                    last_left = ir_left;
+                    pixels.setPixelColor(6, ir_left, 0, 0);
+                    show_leds = true;
+                }
+                if (last_right != ir_right)
+                {
+                    last_right = ir_right;
+                    pixels.setPixelColor(10, ir_right, 0, 0);
+                    show_leds = true;
+                }
+                if (show_leds)
+                    pixels.show();
+            #endif
         #endif
+
+
+        #if WITH_COMPASS
+            int16_t heading = read_compass_heading();
+        #endif
+
+        handle_buttons();
+
     }
 }

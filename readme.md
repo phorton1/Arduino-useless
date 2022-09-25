@@ -1,29 +1,26 @@
 # Useless Box
 
-Basics:
 
 - Servo Arm
 - Servo Lid
 - 4 x Servo Wheels
 - LEDs
-
-Sensors?
-
-- Compass (for returning after spin move)
 - IR Sensors
-- Sonar Sensor
+- Compass (for returning after spin move)
 
-Other outputs?
+## Session Lifecycle
 
-- Secondary Arm
-- Secondary Lid Mechanism
-- Surrender Flag
+The box initiates a session with someone the first time the switch is thrown.
+A session times out after a period (i.e. 1 minute) of activity.
 
 
-I envision a state machine that gets increasingly chaotic involving
-
-- normal moves
-- fast moves
-- slow moves
-- jitter moves
-- paused moves
+// OVERIDING DESIGN CONSIDERATION
+//
+// Calling neoPixels.show() while servos are attached causes jitter in the servos.
+//
+// Therefor care must be taken to coordinate the movement of servos with pixel changes.
+//
+// In general we keep the servos detached when not in use.
+// The only place that *might* be a problem is holding up a spring loaded lid.
+//
+// Jitter is unimportant in the wheels.

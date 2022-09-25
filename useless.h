@@ -2,6 +2,9 @@
 
 #pragma once
 
+#include <Arduino.h>
+
+
 #define PIN_ARM				2
 #define PIN_LID		  		3
 #define PIN_WHEEL_FL  		4
@@ -29,3 +32,8 @@
 #define SERVO_WHEEL_BR		4
 #define SERVO_WHEEL_FR		5
 #define NUM_SERVOS   		6
+
+#define WITH_PIXELS			0
+#define WITH_IR				0
+#define WITH_COMPASS		0
+
