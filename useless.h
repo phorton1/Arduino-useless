@@ -33,7 +33,7 @@
 #define SERVO_WHEEL_FR		5
 #define NUM_SERVOS   		6
 
-#define WITH_PIXELS			0
-#define WITH_IR				0
+#define WITH_PIXELS			1
+#define WITH_IR				1
 #define WITH_COMPASS		0
 

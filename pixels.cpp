@@ -9,7 +9,7 @@
 	void init_pixels()
 	{
 		pixels.begin();
-		pixels.setBrightness(128);
+		pixels.setBrightness(120);
 		pixels.clear();
 
 		pixels.show();
