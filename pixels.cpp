@@ -26,10 +26,8 @@
 			}
 			delay(100);
 		}
-		delay(200);
-		pixels.clear();
-		pixels.show();
-	}
+		// leaves row of blue showing
+		}
 
 
 	void setLeftPixels(uint8_t r, uint8_t g, uint8_t b, bool show /*=true*/)

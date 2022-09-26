@@ -35,5 +35,6 @@
 
 #define WITH_PIXELS			1
 #define WITH_IR				1
-#define WITH_COMPASS		0
+#define WITH_COMPASS		1
 
+extern bool switch_state;
