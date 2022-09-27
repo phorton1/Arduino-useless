@@ -61,19 +61,14 @@
 	// waits for no ir then does the step
 
 
-/*
 #define WHEELS_LEFT		0x1000
 #define WHEELS_RIGHT	0x2000
-#define WHEELS_CLOCK	0x4000
-#define WHEELS_COUNTER	0x8000
+#define WHEELS_CW		0x4000
+#define WHEELS_CCW		0x8000
 	// these are given a duration in milliseconds
 	// where 150 is a burst and 2 seconds a rotation
-
-#define WHEELS_HEADING	0x00010000
-	// return to heading from the very first switch on
-*/
-
-
+#define WHEELS_HOME		0x0800
+	// return to heading from the start of the act
 
 
 void start_act(bool new_session);

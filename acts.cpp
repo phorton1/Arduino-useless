@@ -3,6 +3,7 @@
 #include "acts.h"
 #include "arm.h"
 #include "lid.h"
+#include "wheels.h"
 #include "ir.h"
 #include "pixels.h"
 #include "myDebug.h"
@@ -61,6 +62,10 @@ step_t normal_medium[] = {
 	{ STEP_TYPE_MOVE,	{.move=		{ARM_TURN_OFF,					  0,  50,   0}}},
 	{ STEP_TYPE_MOVE,	{.move=		{ARM_DOWN, 						  0,  50,   0}}},
 	{ STEP_TYPE_MOVE,	{.move=		{LID_CLOSED, 					  0,  50,   0}}},
+
+	{ STEP_TYPE_MOVE,	{.move=		{WHEELS_CCW | LID_OPEN, 		  0,   20,   220}}},
+	{ STEP_TYPE_MOVE,	{.move=		{WHEELS_HOME | LID_CLOSED, 		  0,   20,   10}}},
+
 	{ 0 }
 };
 
@@ -241,6 +246,8 @@ void start_act(bool new_session)
 		ir_mode = 0;
 	}
 
+	wheels::setHeading();
+
 	// display the "light" as the act_count % 15 as left to right white user pixels
 
 	#if WITH_PIXELS
@@ -270,17 +277,12 @@ void start_act(bool new_session)
 
 	session_act_count++;
 
-	if (session_act_count > 15)
+	if (session_act_count > NUM_ACTS)
 	{
-		int num =session_act_count - 10;
-		ir_mode = random(num) > 2;
+		cur_act_num = random(NUM_ACTS);
+		ir_mode = random(5);   // 1 in 5 chance of no ir mode
 	}
-
-	#if 1
-		if (session_act_count > NUM_ACTS)
-			cur_act_num = random(NUM_ACTS);
-		else
-	#endif
+	else
 	{
 		cur_act_num++;
 		if (cur_act_num >= NUM_ACTS) cur_act_num = 0;
@@ -319,7 +321,7 @@ void process_act()
 		return;
 	}
 
-	if (arm::busy() || lid::busy())
+	if (arm::busy() || lid::busy() || wheels::busy())
 	{
 		return;
 	}
@@ -374,6 +376,7 @@ void process_act()
 		}
 
 		uint8_t rate = step->move.rate;
+		uint8_t dur = step->move.wheel_duration;
 
 		if (bits & LID_CLOSED)
 			lid::close(rate);
@@ -396,6 +399,21 @@ void process_act()
 			arm::off_position(rate);
 		else if (bits & ARM_TURN_OFF)
 			arm::turn_off_switch(rate);
+
+		else if (bits & WHEELS_LEFT)
+			wheels::left(dur);
+		else if (bits & WHEELS_RIGHT)
+			wheels::right(dur);
+		else if (bits & WHEELS_CW)
+			wheels::cw(dur);
+		else if (bits & WHEELS_CCW)
+			wheels::ccw(dur);
+		else if (bits & WHEELS_HOME)
+		{
+			delay(5);
+			wheels::home(true);
+		}
+
 	}
 	else if (step_type == STEP_TYPE_PIXELS)
 	{

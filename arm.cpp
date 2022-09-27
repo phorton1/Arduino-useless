@@ -8,8 +8,8 @@
 #define ARM_UP_DEGREES 30
 #define ARM_OUT_DEGREES 60
 #define ARM_POISED_DEGREES 82
-#define ARM_OFF_DEGREES 95
-#define ARM_TURN_OFF_DEGREES 96
+#define ARM_OFF_DEGREES 96
+#define ARM_TURN_OFF_DEGREES 98
 
 
 bool arm::m_wait_off;

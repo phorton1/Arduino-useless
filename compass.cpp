@@ -6,8 +6,7 @@
 #if WITH_COMPASS
     #include <Wire.h>
     #include "HMC5883L.h"
-
-    #define WITH_CALIBRATION  0
+    #include <myDebug.h>
 
     // true north is +3.4 degrees to the right of magnetic north
 
@@ -15,37 +14,23 @@
 
     static int heading = 237;
 
-    #define DEFAULT_X_MIN  -354
-    #define DEFAULT_X_MAX   318
-    #define DEFAULT_Y_MIN  -567
-    #define DEFAULT_Y_MAX   146
+    #define DEFAULT_X_MIN  -1193    // -354
+    #define DEFAULT_X_MAX  -582     //  318
+    #define DEFAULT_Y_MIN  -657     // -567
+    #define DEFAULT_Y_MAX  75       // 146
 
     int16_t compass_x_min = DEFAULT_X_MIN;
     int16_t compass_x_max = DEFAULT_X_MAX;
     int16_t compass_y_min = DEFAULT_Y_MIN;
     int16_t compass_y_max = DEFAULT_Y_MAX;
 
-    #if WITH_CALIBRATION
-        #define EEPROM_CALIB_OFFSET  32
+    #define WITH_CALIBRATION  0
 
-        uint32_t in_calibration = 0;
+    #if WITH_CALIBRATION
         int16_t calib_x_min = 32000;
         int16_t calib_x_max = -32000;
         int16_t calib_y_min = 32000;
         int16_t calib_y_max = -32000;
-
-        void initCalibration()
-        {
-            compass_x_min = eepromReadInt(EEPROM_CALIB_OFFSET     , DEFAULT_X_MIN);
-            compass_x_max = eepromReadInt(EEPROM_CALIB_OFFSET + 2 , DEFAULT_X_MAX);
-            compass_y_min = eepromReadInt(EEPROM_CALIB_OFFSET + 4 , DEFAULT_Y_MIN);
-            compass_y_max = eepromReadInt(EEPROM_CALIB_OFFSET + 6 , DEFAULT_Y_MAX);
-            display(0,"initialized calibration  min/max x=%d,%d  y=%d,%d",
-                compass_x_min,
-                compass_x_max,
-                compass_y_min,
-                compass_y_max);
-        }
     #endif
 
 
@@ -54,9 +39,6 @@
         Wire.begin();
         // display(0,"initializing HMC5883 compass ...",0);
         compass.initialize();
-        #if WITH_CALIBRATION
-            initCalibration();
-        #endif
     }
 
     int16_t read_compass_heading()
@@ -74,6 +56,24 @@
             if (mx > calib_x_max) calib_x_max = mx;
             if (my < calib_y_min) calib_y_min = my;
             if (my > calib_y_max) calib_y_max = my;
+
+            if (compass_x_min != calib_x_min ||
+                compass_x_max != calib_x_max ||
+                compass_y_min != calib_y_min ||
+                compass_y_max != calib_y_max)
+            {
+                compass_x_min = calib_x_min;
+                compass_x_max = calib_x_max;
+                compass_y_min = calib_y_min;
+                compass_y_max = calib_y_max;
+
+                display(0,"calib(%d,%d,%d,%d)",
+                    compass_x_min,
+                    compass_x_max,
+                    compass_y_min,
+                    compass_y_max );
+            }
+
         #endif
 
         // scale x and y and determine heading invariantly

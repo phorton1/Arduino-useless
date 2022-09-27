@@ -6,6 +6,7 @@
 #include "compass.h"
 #include "arm.h"
 #include "lid.h"
+#include "wheels.h"
 #include "acts.h"
 #include "buttons.h"
 
@@ -55,6 +56,8 @@ void setup()
     arm::init();
 
     lid::init();
+
+    wheels::init();
 
     #if WITH_PIXELS
         pixels.clear();
@@ -121,5 +124,10 @@ void loop()
         process_act();
 
         handle_buttons();
+
+        // PRH - need compass calibration!
+        // display(0,"heading=%d",read_compass_heading());
     }
+
+    wheels::update();
 }
