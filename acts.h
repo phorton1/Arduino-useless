@@ -39,7 +39,7 @@
 
 #define STEP_TYPE_MOVE  	0x01
 #define STEP_TYPE_PIXELS	0x02
-#define STEP_TYPE_LOOP		0x03
+#define STEP_TYPE_LOOP		0x04
 
 #define LID_CLOSED		0x0001
 #define LID_PEEK		0x0002
@@ -51,15 +51,12 @@
 #define ARM_OUT			0x0040
 #define ARM_POISED		0x0080
 
-#define ARM_TURN_OFF_POSITION	0x0100
-	// goes to 91 degrees, *may* turn off switch
-	// used as the "lock" position in IR sycle
-#define ARM_TURN_OFF			0x0200
+
+#define ARM_TURN_OFF			0x0100
 	// TRANSITION TO SWTICH OFF STATE
 	// invariant moves to 92+ degrees or until the switch goes off
-#define WAIT_NO_IR				0x0400
+#define WAIT_NO_IR				0x0200
 	// waits for no ir then does the step
-
 
 #define WHEELS_LEFT		0x1000
 #define WHEELS_RIGHT	0x2000
@@ -69,6 +66,7 @@
 	// where 150 is a burst and 2 seconds a rotation
 #define WHEELS_HOME		0x0800
 	// return to heading from the start of the act
+
 
 
 void start_act();

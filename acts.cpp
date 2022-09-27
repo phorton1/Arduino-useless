@@ -69,16 +69,23 @@
 
 #pragma pack 1
 
+// delays and durations are in 100's of a second
+
 typedef struct
 {
 	uint8_t	step_type;
+	uint8_t min_pass;
+	uint8_t min_mode;
 
 	union {
 		struct {
 			uint16_t 	move_bits;
-			uint8_t     pre_delay;		// in 100's of a second
+			uint8_t     delay1;
+			uint8_t     delay_min;
+			uint8_t     delay_max;
+
 			uint8_t     rate;
-			uint8_t		wheel_duration;	// in 100's of a second
+			uint8_t		wheel_duration;
 		} move;
 		struct
 		{
@@ -92,7 +99,9 @@ typedef struct
 		struct
 		{
 			uint8_t		num_steps;
-			uint8_t		num_repeats;
+			uint8_t		repeat1;
+			uint8_t		repeat_min;
+			uint8_t		repeat_max;
 		} loop;
 	};
 
@@ -111,132 +120,121 @@ typedef step_t *act_t;		// an act is an array of steps
 #define WHITE   255,255,255
 
 
+#define WHEEL_TIME  3
+#define ROTATE_TIME 120
 
 const step_t normal_medium[] PROGMEM = {
-	{ STEP_TYPE_MOVE,	{.move=		{ARM_DOWN, 						  0, 255,   0}}},
-	{ STEP_TYPE_MOVE,	{.move=		{LID_OPEN, 						  0,  50,   0}}},
-	{ STEP_TYPE_MOVE,	{.move=		{ARM_TURN_OFF,					  0,  50,   0}}},
-	{ STEP_TYPE_MOVE,	{.move=		{ARM_DOWN, 						  0,  50,   0}}},
-	{ STEP_TYPE_MOVE,	{.move=		{LID_CLOSED, 					  0,  50,   0}}},
-
-	/*
-	{ STEP_TYPE_MOVE,	{.move=		{WHEELS_CCW | LID_OPEN, 		  0,   20,   220}}},
-	{ STEP_TYPE_MOVE,	{.move=		{WHEELS_HOME | LID_CLOSED, 		  0,   20,   10}}},
-	*/
+	{ STEP_TYPE_MOVE,	0,1,	{.move=		{WHEELS_CW, 		  			0,0,0,	 	  	 0,    ROTATE_TIME}}},
+	{ STEP_TYPE_MOVE,	0,1,	{.move=		{WHEELS_HOME,					0,0,0,	 	  	 0,    0}}},
+	{ STEP_TYPE_MOVE,	0,0,	{.move=		{ARM_DOWN, 						0,0,0,	 		255,   0}}},
+	{ STEP_TYPE_MOVE,	0,0,	{.move=		{LID_OPEN, 						0,0,0,	 		 50,   0}}},
+	{ STEP_TYPE_MOVE,	0,0,	{.move=		{ARM_TURN_OFF,					0,0,0,	 		 50,   0}}},
+	{ STEP_TYPE_MOVE,	0,0,	{.move=		{ARM_DOWN, 						0,0,0,	 		 50,   0}}},
+	{ STEP_TYPE_MOVE,	0,0,	{.move=		{LID_CLOSED, 					0,0,0,	 		 50,   0}}},
+	{ STEP_TYPE_MOVE,	2,0,	{.move=		{WHEELS_CCW, 		  			0,0,0,	 		  0,   WHEEL_TIME}}},
+	{ STEP_TYPE_MOVE,	2,0,	{.move=		{WHEELS_CW,						0,0,0,	 		  0,   WHEEL_TIME}}},
+    { STEP_TYPE_LOOP,	2,0,	{.loop=		{2,2,1,5}}},
 
 	{ 0 }
 };
 
 
 const step_t quick_poised[] PROGMEM = {
-	{ STEP_TYPE_MOVE,	{.move=		{ARM_DOWN, 						  0, 255,   0}}},
-	{ STEP_TYPE_PIXELS, {.pixels=	{BLUE, BLUE}}},
-	{ STEP_TYPE_MOVE,	{.move=		{LID_OPEN, 		  				  0, 255,   0}}},
-	{ STEP_TYPE_PIXELS, {.pixels=	{MAGENTA, MAGENTA}}},
-	{ STEP_TYPE_MOVE,	{.move=		{ARM_POISED, 		 			 80, 255,   0}}},
-	{ STEP_TYPE_MOVE,	{.move=		{ARM_TURN_OFF,					100, 128,   0}}},
-	{ STEP_TYPE_PIXELS, {.pixels=	{GREEN, GREEN}}},
-	{ STEP_TYPE_MOVE,	{.move=		{ARM_POISED,					  0,  10,   0}}},
-	{ STEP_TYPE_PIXELS, {.pixels=	{CYAN, CYAN}}},
-	{ STEP_TYPE_MOVE,	{.move=		{ARM_DOWN, 						100, 255,   0}}},
-	{ STEP_TYPE_MOVE,	{.move=		{LID_CLOSED, 			    	  0,  50,   0}}},
-	{ STEP_TYPE_PIXELS, {.pixels=	{BLACK, BLACK}}},
+	{ STEP_TYPE_MOVE,	0,0,	{.move=		{ARM_DOWN, 						0,0,0, 			255,   0}}},
+	{ STEP_TYPE_PIXELS, 0,0,	{.pixels=	{BLUE, BLUE}}},
+	{ STEP_TYPE_MOVE,	0,0,	{.move=		{LID_OPEN, 		  				0,0,0,			120,   0}}},
+	{ STEP_TYPE_PIXELS, 0,0,	{.pixels=	{MAGENTA, MAGENTA}}},
+	{ STEP_TYPE_MOVE,	0,0,	{.move=		{ARM_POISED, 		 			60,50,120, 		255,   0}}},
+	{ STEP_TYPE_MOVE,	0,0,	{.move=		{ARM_TURN_OFF,					120,100,250,	100,   0}}},
+	{ STEP_TYPE_PIXELS, 0,0,	{.pixels=	{GREEN, GREEN}}},
+	{ STEP_TYPE_MOVE,	0,0,	{.move=		{ARM_POISED,					0,0,0, 		 	 20,   0}}},
+	{ STEP_TYPE_PIXELS, 0,0,	{.pixels=	{CYAN, CYAN}}},
+	{ STEP_TYPE_MOVE,	0,0,	{.move=		{ARM_DOWN, 						100,100,150, 	255,   0}}},
+	{ STEP_TYPE_MOVE,	0,0,	{.move=		{LID_CLOSED, 			    	0,0,0,  		 50,   0}}},
+	{ STEP_TYPE_PIXELS, 0,0,	{.pixels=	{BLACK, BLACK}}},
+	{ STEP_TYPE_MOVE,	2,0,	{.move=		{WHEELS_CCW, 		  			  0,0,0,	 	  0,   WHEEL_TIME}}},
+	{ STEP_TYPE_MOVE,	2,0,	{.move=		{WHEELS_CW,						  0,0,0,	 	  0,   WHEEL_TIME}}},
+    { STEP_TYPE_LOOP,	2,0,	{.loop=		{2,2,1,5}}},
 	{ 0 }
 };
 
 
 
 const step_t fastest[] PROGMEM = {
-	{ STEP_TYPE_PIXELS, {.pixels=	{GREEN, GREEN}}},
-	{ STEP_TYPE_MOVE,	{.move=		{ARM_TURN_OFF,					  0, 255,   0}}},
-	{ STEP_TYPE_MOVE,	{.move=		{ARM_DOWN | LID_CLOSED, 		  0, 255,   0}}},
-	{ STEP_TYPE_PIXELS, {.pixels=	{BLACK, BLACK}}},
+	{ STEP_TYPE_PIXELS, 0,0,	{.pixels=	{GREEN, GREEN}}},
+	{ STEP_TYPE_MOVE,	0,0,	{.move=		{ARM_TURN_OFF,					0,0,0,			255,   0}}},
+	{ STEP_TYPE_MOVE,	0,0,	{.move=		{ARM_DOWN | LID_CLOSED, 		0,0,0,			255,   0}}},
+	{ STEP_TYPE_PIXELS, 0,0,	{.pixels=	{BLACK, BLACK}}},
 	{ 0 }
 };
 
 const step_t quick_small_delayed[] PROGMEM = {
-	{ STEP_TYPE_PIXELS, {.pixels=	{RED, RED}}},
-	{ STEP_TYPE_MOVE,	{.move=		{LID_SMALL,						100,  30,   0}}},
-	{ STEP_TYPE_PIXELS, {.pixels=	{GREEN, GREEN}}},
-	{ STEP_TYPE_MOVE,	{.move=		{ARM_TURN_OFF,					150, 255,   0}}},
-	{ STEP_TYPE_PIXELS, {.pixels=	{BLUE, BLUE}}},
-	{ STEP_TYPE_MOVE,	{.move=		{ARM_DOWN, 						  0, 255,   0}}},
-	{ STEP_TYPE_MOVE,	{.move=		{LID_CLOSED, 					100,  50,   0}}},
-	{ STEP_TYPE_PIXELS, {.pixels=	{BLACK, BLACK}}},
+	{ STEP_TYPE_PIXELS, 0,0,	{.pixels=	{RED, RED}}},
+	{ STEP_TYPE_MOVE,	0,0,	{.move=		{LID_SMALL,						100,20,100, 	 30,   0}}},
+	{ STEP_TYPE_PIXELS, 0,0,	{.pixels=	{GREEN, GREEN}}},
+	{ STEP_TYPE_MOVE,	0,0,	{.move=		{ARM_TURN_OFF,					150,50,200, 	255,   0}}},
+	{ STEP_TYPE_PIXELS, 0,0,	{.pixels=	{BLUE, BLUE}}},
+	{ STEP_TYPE_MOVE,	0,0,	{.move=		{ARM_DOWN, 						0,0,0,			255,   0}}},
+	{ STEP_TYPE_MOVE,	0,0,	{.move=		{LID_CLOSED, 					100,0,100,  	 40,    0}}},
+	{ STEP_TYPE_PIXELS, 0,0,	{.pixels=	{BLACK, BLACK}}},
 	{ 0 }
 };
 
 const step_t fastest_no_ir[] PROGMEM = {
-	{ STEP_TYPE_PIXELS, {.pixels=	{RED, RED}}},
-	{ STEP_TYPE_MOVE,	{.move=		{ARM_TURN_OFF | WAIT_NO_IR,		  0, 255,   0}}},
-	{ STEP_TYPE_PIXELS, {.pixels=	{GREEN, GREEN}}},
-	{ STEP_TYPE_MOVE,	{.move=		{ARM_DOWN | LID_CLOSED, 		  0, 255,   0}}},
-	{ STEP_TYPE_PIXELS, {.pixels=	{BLACK, BLACK}}},
+	{ STEP_TYPE_PIXELS, 0,0,	{.pixels=	{RED, RED}}},
+	{ STEP_TYPE_MOVE,	0,0,	{.move=		{ARM_TURN_OFF | WAIT_NO_IR,		0,0,0,			255,   0}}},
+	{ STEP_TYPE_PIXELS, 0,0,	{.pixels=	{GREEN, GREEN}}},
+	{ STEP_TYPE_MOVE,	0,0,	{.move=		{ARM_DOWN | LID_CLOSED, 		0,0,0,			255,   0}}},
+	{ STEP_TYPE_PIXELS, 0,0,	{.pixels=	{BLACK, BLACK}}},
+	{ 0 }
+};
+
+
+
+const step_t arm_repeat[] PROGMEM = {
+	{ STEP_TYPE_PIXELS, 0,0,	{.pixels=	{MAGENTA, MAGENTA}}},
+	{ STEP_TYPE_MOVE,	0,0,	{.move=		{LID_OPEN, 						100,0,100, 		80,   0}}},
+	{ STEP_TYPE_PIXELS, 0,0,	{.pixels=	{RED, RED}}},
+	{ STEP_TYPE_MOVE,	0,0,	{.move=		{ARM_UP, 					  	0,0,0,			255,   0}}},
+	{ STEP_TYPE_PIXELS, 0,0,	{.pixels=	{MAGENTA, MAGENTA}}},
+	{ STEP_TYPE_MOVE,	0,0,	{.move=		{ARM_POISED,				    0,0,0,			255,   0}}},
+	{ STEP_TYPE_PIXELS, 0,0,	{.pixels=	{RED, RED}}},
+	{ STEP_TYPE_LOOP,   0,0,	{.loop=		{5,4,2,6}}},
+	{ STEP_TYPE_PIXELS, 0,0,	{.pixels=	{GREEN, GREEN}}},
+	{ STEP_TYPE_MOVE,	0,0,	{.move=		{ARM_TURN_OFF,					100,50,150,		255,   0}}},
+	{ STEP_TYPE_PIXELS, 0,0,	{.pixels=	{BLUE, BLUE}}},
+	{ STEP_TYPE_MOVE,	0,0,	{.move=		{ARM_DOWN, 						0,0,0,			255,   0}}},
+	{ STEP_TYPE_MOVE,	0,0,	{.move=		{LID_CLOSED, 					0,0,0,  		 50,   0}}},
+	{ STEP_TYPE_PIXELS, 0,0,	{.pixels=	{BLACK, BLACK}}},
 	{ 0 }
 };
 
 
 // flapper explicitly moves ARM_DOWN and LID_CLOSED to begin in case of ir_mode interrupt
 
-const step_t lid_flapper[] PROGMEM = {
-	{ STEP_TYPE_MOVE,	{.move=		{ARM_DOWN | LID_CLOSED,			  0, 255,   0}}},
-	{ STEP_TYPE_PIXELS, {.pixels=	{GREEN, RED}}},
-	{ STEP_TYPE_MOVE,	{.move=		{LID_SMALL, 					  0, 255,   0}}},
-	{ STEP_TYPE_PIXELS, {.pixels=	{GREEN, RED}}},
-	{ STEP_TYPE_MOVE,	{.move=		{LID_CLOSED, 					  0, 255,   0}}},
-	{ STEP_TYPE_PIXELS, {.pixels=	{RED, GREEN}}},
-	{ STEP_TYPE_LOOP,   {.loop=		{5,10}}},
-	{ STEP_TYPE_PIXELS, {.pixels=	{BLUE, BLUE}}},
-	{ STEP_TYPE_MOVE,	{.move=		{LID_SMALL,						100,  50,   0}}},
-	{ STEP_TYPE_PIXELS, {.pixels=	{CYAN, CYAN}}},
-	{ STEP_TYPE_MOVE,	{.move=		{ARM_TURN_OFF,					100, 255,   0}}},
-	{ STEP_TYPE_MOVE,	{.move=		{ARM_DOWN, 						  0, 255,   0}}},
-	{ STEP_TYPE_MOVE,	{.move=		{LID_CLOSED, 					  0,  50,   0}}},
-	{ STEP_TYPE_PIXELS, {.pixels=	{BLACK, BLACK}}},
-	{ 0 }
-};
+const step_t flapper[] PROGMEM = {
+	{ STEP_TYPE_MOVE,	0,0,	{.move=		{ARM_DOWN | LID_CLOSED,			  0,0,0,		255,   0}}},
+	{ STEP_TYPE_PIXELS, 0,0,	{.pixels=	{GREEN, RED}}},
+	{ STEP_TYPE_MOVE,	0,0,	{.move=		{LID_SMALL, 					  0,0,0,		200,   0}}},
+	{ STEP_TYPE_PIXELS, 0,0,	{.pixels=	{GREEN, RED}}},
+	{ STEP_TYPE_MOVE,	0,0,	{.move=		{LID_CLOSED, 					  0,0,0,		255,   0}}},
+	{ STEP_TYPE_PIXELS, 0,0,	{.pixels=	{RED, GREEN}}},
+	{ STEP_TYPE_LOOP,   0,0,	{.loop=		{5,3,0,4}}},
 
-const step_t arm_repeat[] PROGMEM = {
-	{ STEP_TYPE_PIXELS, {.pixels=	{MAGENTA, MAGENTA}}},
-	{ STEP_TYPE_MOVE,	{.move=		{LID_OPEN, 						100, 128,   0}}},
-	{ STEP_TYPE_PIXELS, {.pixels=	{RED, RED}}},
-	{ STEP_TYPE_MOVE,	{.move=		{ARM_UP, 					     0, 255,   0}}},
-	{ STEP_TYPE_PIXELS, {.pixels=	{MAGENTA, MAGENTA}}},
-	{ STEP_TYPE_MOVE,	{.move=		{ARM_POISED,				     0, 255,   0}}},
-	{ STEP_TYPE_PIXELS, {.pixels=	{RED, RED}}},
-	{ STEP_TYPE_LOOP,   {.loop=		{5,10}}},
-	{ STEP_TYPE_PIXELS, {.pixels=	{GREEN, GREEN}}},
-	{ STEP_TYPE_MOVE,	{.move=		{ARM_TURN_OFF,					100, 255,   0}}},
-	{ STEP_TYPE_PIXELS, {.pixels=	{BLUE, BLUE}}},
-	{ STEP_TYPE_MOVE,	{.move=		{ARM_DOWN, 						  0, 255,   0}}},
-	{ STEP_TYPE_MOVE,	{.move=		{LID_CLOSED, 					  0,  50,   0}}},
-	{ STEP_TYPE_PIXELS, {.pixels=	{BLACK, BLACK}}},
-	{ 0 }
-};
+	{ STEP_TYPE_PIXELS, 0,0,	{.pixels=	{BLUE, BLUE}}},
+	{ STEP_TYPE_MOVE,	0,0,	{.move=		{LID_SMALL,						  0,0,0,		200,   0}}},
+	{ STEP_TYPE_PIXELS, 0,0,	{.pixels=	{CYAN, CYAN}}},
+	{ STEP_TYPE_MOVE,	0,0,	{.move=		{ARM_TURN_OFF,					  0,0,0,		255,   0}}},
+	{ STEP_TYPE_MOVE,	0,0,	{.move=		{ARM_DOWN | LID_CLOSED, 		  0,0,0,		255,   0}}},
 
-const step_t middle_flapper[] PROGMEM = {
-	{ STEP_TYPE_MOVE,	{.move=		{ARM_DOWN | LID_CLOSED,			  0, 255,   0}}},
-	{ STEP_TYPE_PIXELS, {.pixels=	{GREEN, RED}}},
-	{ STEP_TYPE_MOVE,	{.move=		{LID_SMALL, 					  0, 255,   0}}},
-	{ STEP_TYPE_PIXELS, {.pixels=	{GREEN, RED}}},
-	{ STEP_TYPE_MOVE,	{.move=		{LID_CLOSED, 					  0, 255,   0}}},
-	{ STEP_TYPE_PIXELS, {.pixels=	{RED, GREEN}}},
-	{ STEP_TYPE_LOOP,   {.loop=		{5,8}}},
+	{ STEP_TYPE_PIXELS, 0,0,	{.pixels=	{GREEN, RED}}},
+	{ STEP_TYPE_MOVE,	0,0,	{.move=		{LID_SMALL, 					  0,0,0,		200,   0}}},
+	{ STEP_TYPE_PIXELS, 0,0,	{.pixels=	{GREEN, RED}}},
+	{ STEP_TYPE_MOVE,	0,0,	{.move=		{LID_CLOSED, 					  0,0,0,		255,   0}}},
+	{ STEP_TYPE_PIXELS, 0,0,	{.pixels=	{RED, GREEN}}},
+	{ STEP_TYPE_LOOP,   0,0,	{.loop=		{0,0,0,4}}},
 
-	{ STEP_TYPE_PIXELS, {.pixels=	{BLUE, BLUE}}},
-	{ STEP_TYPE_MOVE,	{.move=		{LID_SMALL,						  0, 255,   0}}},
-	{ STEP_TYPE_PIXELS, {.pixels=	{CYAN, CYAN}}},
-	{ STEP_TYPE_MOVE,	{.move=		{ARM_TURN_OFF,					  0, 255,   0}}},
-	{ STEP_TYPE_MOVE,	{.move=		{ARM_DOWN | LID_CLOSED, 		  0, 255,   0}}},
-
-	{ STEP_TYPE_PIXELS, {.pixels=	{GREEN, RED}}},
-	{ STEP_TYPE_MOVE,	{.move=		{LID_SMALL, 					  0, 255,   0}}},
-	{ STEP_TYPE_PIXELS, {.pixels=	{GREEN, RED}}},
-	{ STEP_TYPE_MOVE,	{.move=		{LID_CLOSED, 					  0, 255,   0}}},
-	{ STEP_TYPE_PIXELS, {.pixels=	{RED, GREEN}}},
-	{ STEP_TYPE_LOOP,   {.loop=		{5,8}}},
-
-	{ STEP_TYPE_PIXELS, {.pixels=	{BLACK, BLACK}}},
+	{ STEP_TYPE_PIXELS, 0,0,	{.pixels=	{BLACK, BLACK}}},
 	{ 0 }
 };
 
@@ -251,17 +249,14 @@ act_t acts[] = {
 	quick_poised,
 	fastest,
 	fastest_no_ir,
+	fastest_no_ir,
 	quick_small_delayed,
 	fastest_no_ir,
 	arm_repeat,
 	quick_poised,
-	lid_flapper,
-	fastest,
 	fastest_no_ir,
 	fastest_no_ir,
-	middle_flapper,
-	fastest,
-	fastest_no_ir,
+	flapper,
 };
 
 
@@ -408,14 +403,28 @@ void process_act()
 		return;
 	}
 
-	step_t *step = getStep(cur_act,cur_step_num);
-	// step_t *step = &cur_act[cur_step_num];
-	uint8_t step_type = step->step_type;
-	if (!step_type)
+	step_t *step = 0;
+	int pass = session_act_count / NUM_ACTS;
+
+	while (!step)
 	{
-		in_act = false;
-		return;
+		step = getStep(cur_act,cur_step_num);
+		if (!step->step_type)
+		{
+			in_act = false;
+			return;
+		}
+		if (step->min_pass > pass ||
+			step->min_mode > move_mode)
+		{
+			display(0,"skipping act(%d) step(%d)",cur_act_num,cur_step_num);
+			cur_step_num++;
+			step = 0;
+		}
 	}
+
+
+	uint8_t step_type = step->step_type;
 
 	#if 0
 		display(0," st(%d) sw(%d) ir(%d) arm(%d:%d:%d:%d) lid(%d:%d:%d:%d)",
@@ -450,13 +459,17 @@ void process_act()
 			}
 		#endif
 
-		if (step->move.pre_delay)
+		int del = 0;
+		if (pass == 0 && step->move.delay1)
 		{
-			int d = step->move.pre_delay * 10;
-			int min = d / 2;
-			int max = d + min;
-			delay(random(min,max));
+			del = step->move.delay1 * 10;
 		}
+		else if (pass && step->move.delay_max)
+		{
+			del = random(step->move.delay_min * 10,step->move.delay_max * 10);
+		}
+		if (del)
+			delay(del);
 
 		uint8_t rate = step->move.rate;
 		uint8_t dur = step->move.wheel_duration;
@@ -478,8 +491,6 @@ void process_act()
 			arm::out(rate);
 		else if (bits & ARM_POISED)
 			arm::poised(rate);
-		else if (bits & ARM_TURN_OFF_POSITION)
-			arm::off_position(rate);
 		else if (bits & ARM_TURN_OFF)
 			arm::turn_off_switch(rate);
 
@@ -511,7 +522,16 @@ void process_act()
 	}
 	else if (step_type == STEP_TYPE_LOOP)
 	{
-		if (loop_count < 2 + random(step->loop.num_repeats))
+		int count = 0;
+		if (pass == 0 && step->loop.repeat1)
+		{
+			count = step->loop.repeat1;
+		}
+		else if (pass && step->loop.repeat_max)
+		{
+			count = random(step->loop.repeat_min,step->loop.repeat_max+1);
+		}
+		if (loop_count < count)
 		{
 			cur_step_num -= step->loop.num_steps;
 			loop_count++;

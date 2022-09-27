@@ -3,9 +3,9 @@
 #include "lid.h"
 #include <VarSpeedServo.h>
 
-#define LID_PEEK_DEGREES  20
-#define LID_SMALL_DEGREES 30
-#define LID_OPEN_DEGREES  47
+#define LID_PEEK_DEGREES  15
+#define LID_SMALL_DEGREES 25
+#define LID_OPEN_DEGREES  35
 
 
 

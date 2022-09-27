@@ -5,7 +5,7 @@
 #include <myDebug.h>
 #include "compass.h"
 
-#define DEBUG_WHEELS 	  0
+#define DEBUG_WHEELS 	  1
 
 // Weirdness ...
 // For some reason the servo on wheel one has the opposite polarity of
@@ -46,6 +46,7 @@ void wheels::setHeading()
 {
 	#if WITH_COMPASS
 		m_heading = read_compass_heading();
+		display(0,"set_heading(%d)",m_heading);
 	#endif
 }
 
@@ -57,12 +58,16 @@ void wheels::update()
 	uint32_t now = millis();
 
 	#if WITH_COMPASS
-		if (m_home_time && now > m_home_time)	// every millisecond
+		if (m_home_time)
 		{
-			home(false);
-			#if DEBUG_WHEELS
-				if (!m_home_time) display(0,"home stopped %d",read_compass_heading());
-			#endif
+			if (now > m_home_time)	// every millisecond
+			{
+				m_home_time = now;
+				home(false);
+				#if DEBUG_WHEELS
+					if (!m_home_time) display(0,"home stopped %d",read_compass_heading());
+				#endif
+			}
 			return;	// homing doesnt honor durations ...
 		}
 	#endif
@@ -187,12 +192,12 @@ void wheels::home(bool cold)
 		if (diff < -180) diff += 360;
 		if (diff < -2)
 		{
-			speed = diff<-20?30:10;
+			speed = diff<-20?10:10;
 			dir = -1;
 		}
 		else if (diff > 2)
 		{
-			speed = diff>20?30:10;
+			speed = diff>20?10:10;
 			dir = 1;
 		}
 
