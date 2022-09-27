@@ -11,21 +11,12 @@
 #include "buttons.h"
 
 
-#define SESSION_TIMEOUT (2UL*60UL*1000UL)
-    // session times out after two minutes
-    //
-    // NOTE COMPILER ISSUE:
-    //
-    // I was getting weird behavior when I used (2*60*1000) .. without any compiler warnings.
-    // I switched to a "new bootloader" nano and started getting a warning about an integer
-    // overflow when using the above define.  It turns out that by default all constants on the
-    // right side of an expression are automatically 16 bits on Arduino and you MUST use the UL
-    // designation to get around it.
+
 
 
 bool switch_state;
 uint32_t frame_time = 0;
-uint32_t session_start = 0;
+
 
 
 
@@ -67,23 +58,6 @@ void setup()
 
 
 
-void restart_session()
-{
-    extern bool ir_mode;    // in acts.cpp
-    ir_mode = false;
-
-    #if WITH_PIXELS
-        for (int i=0; i<5; i++)
-            pixels.setPixelColor(PIXEL_USER+i,255,0,0);
-        pixels.show();
-        delay(1000);
-        pixels.clear();
-        pixels.show();
-    #endif
-
-    session_start = 0;
-}
-
 
 
 void loop()
@@ -98,9 +72,16 @@ void loop()
             switch_state = sw;
             if (sw)
             {
-                bool new_session = session_start == 0 ? 1 : 0;
-                session_start = now;
-                start_act(new_session);
+                #if WITH_COMPASS
+                    if (get_compass_mode())
+                    {
+                        start_compass_calibration();
+                    }
+                    else
+                #endif
+                {
+                    start_act();
+                }
             }
             else    // turn off lights
             {
@@ -109,25 +90,27 @@ void loop()
                         pixels.setPixelColor(PIXEL_USER+i,0,0,0);
                     pixels.show();
                 #endif
+
+                #if WITH_COMPASS
+                    if (get_compass_mode())
+                        set_compass_mode(0);
+                #endif
             }
         }
 
-        // time out session flashing red once
-
-        #if 0
-            if (session_start && (now > session_start + SESSION_TIMEOUT))
-            {
-                restart_session();
-            }
+        #if WITH_COMPASS
+            // acts are not processed in compass mode
+            if (get_compass_mode())
+                handle_compass();
+            else
         #endif
 
         process_act();
 
         handle_buttons();
-
-        // PRH - need compass calibration!
-        // display(0,"heading=%d",read_compass_heading());
     }
 
     wheels::update();
+        // wheel updating has it's own 1ms frame rate
+        // and works during compass_mode
 }

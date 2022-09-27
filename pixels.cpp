@@ -4,12 +4,30 @@
 
 #if WITH_PIXELS
 
+	#include <EEPROM.h>
+	#include <myDebug.h>
+
+	#define DEFAULT_BRIGHTNESS  64
+
 	Adafruit_NeoPixel pixels(NUM_PIXELS, PIN_LED_STRIP, NEO_GRB + NEO_KHZ800);
 
 	void init_pixels()
 	{
+		uint8_t bright;
+		EEPROM.get(EEPROM_BRIGHTNESS,bright);
+
+		if (bright == 255)
+		{
+			display(0,"using default bright=%d",DEFAULT_BRIGHTNESS);
+			bright = DEFAULT_BRIGHTNESS;
+		}
+		else
+		{
+			display(0,"got bright=%d",bright);
+		}
+
 		pixels.begin();
-		pixels.setBrightness(120);
+		pixels.setBrightness(bright);
 		pixels.clear();
 
 		pixels.show();

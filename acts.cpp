@@ -8,10 +8,66 @@
 #include "pixels.h"
 #include "myDebug.h"
 
+// The "program" proceeds through passes, based on the number of defined acts,
+// increasing in random and more agressive behavior as it goes through the passes.
+//
+// Movements fall into three categories.  Small moves that can happen on a cluttered shelf
+// are included by default and is called MOVE_MODE_0. Slightly bigger movements require button
+// presses to set MOVE_MODE1, which includes upto ONE evasive step and other specific steps.
+// Full circles, more than one evasive step require higher MOVE_MODE_2.
+
+
+// Each step can be assigned a "minimum pass" that it takes effect in, so
+// for instance, we could have an act that has no wheel moves in PASS0 and PASS1, and
+// then starts having wheel moves in PASS2.
+//
+// When an act is not in progress is called an "in between behavior" which includes
+// the ir_arm_mode (where the arm pops out based on an IR signal) and evasion_mode
+// where the box moves to avoid the user.  ir_arm_mode begins in pass2, and evasion_mode
+// only begins at AGRESSION level 1 AFTER at least two other moves (jitters) have
+// happened (to prevent giving away the fact that the box can move)l
+//
+// Furthermore we can set an agression level (via a button), that defaults to zero,
+// and steps can also be limited to only operate at a given agression level.  For
+// instance, spinning the box requires a lot of space, and may not be appropriate
+// when the box is sitting on a cluttered shelf.  So we can say that apinning the
+// box only happens at AGRESSION 2.
+//
+// In addition each step has several items that can be individually randomized:
+//
+//     - delay before the step
+//     - servo rates
+//     - number of repeats
+//     - (wheel duration)
+//
+// The randomization only begins occuring on the second pass.
+//
+//		PASS1 - acts are performed in defined order, using median values
+//              for random variables (min+max/2).  No movements are performed.
+//      PASS2 - adds IR mode and randomization of parameters
+//      PASS3 - adds 1st level of moves (jitters)
+//
+//      after at least two 1st level moves have happened, evasion mode
+//      starts taking place if AG, and if AGRESSION is set to a certain
+//
+//
+
+#define TIMEOUT_SEESIONS   0
+	// if set to 1 the sessions will timeout.
+	// if 0, session can still be restarted via call (button)
+
+#define SESSION_TIMEOUT (2UL*60UL*1000UL)
+    // session times out after two minutes
+    //
+    // NOTE COMPILER ISSUE:
+    //
+    // I was getting weird behavior when I used (2*60*1000) .. without any compiler warnings.
+    // I switched to a "new bootloader" nano and started getting a warning about an integer
+    // overflow when using the above define.  It turns out that by default all constants on the
+    // right side of an expression are automatically 16 bits on Arduino and you MUST use the UL
+    // designation to get around it.
 
 #pragma pack 1
-
-
 
 typedef struct
 {
@@ -56,21 +112,23 @@ typedef step_t *act_t;		// an act is an array of steps
 
 
 
-step_t normal_medium[] = {
+const step_t normal_medium[] PROGMEM = {
 	{ STEP_TYPE_MOVE,	{.move=		{ARM_DOWN, 						  0, 255,   0}}},
 	{ STEP_TYPE_MOVE,	{.move=		{LID_OPEN, 						  0,  50,   0}}},
 	{ STEP_TYPE_MOVE,	{.move=		{ARM_TURN_OFF,					  0,  50,   0}}},
 	{ STEP_TYPE_MOVE,	{.move=		{ARM_DOWN, 						  0,  50,   0}}},
 	{ STEP_TYPE_MOVE,	{.move=		{LID_CLOSED, 					  0,  50,   0}}},
 
+	/*
 	{ STEP_TYPE_MOVE,	{.move=		{WHEELS_CCW | LID_OPEN, 		  0,   20,   220}}},
 	{ STEP_TYPE_MOVE,	{.move=		{WHEELS_HOME | LID_CLOSED, 		  0,   20,   10}}},
+	*/
 
 	{ 0 }
 };
 
 
-step_t quick_poised[] = {
+const step_t quick_poised[] PROGMEM = {
 	{ STEP_TYPE_MOVE,	{.move=		{ARM_DOWN, 						  0, 255,   0}}},
 	{ STEP_TYPE_PIXELS, {.pixels=	{BLUE, BLUE}}},
 	{ STEP_TYPE_MOVE,	{.move=		{LID_OPEN, 		  				  0, 255,   0}}},
@@ -88,7 +146,7 @@ step_t quick_poised[] = {
 
 
 
-step_t fastest[] = {
+const step_t fastest[] PROGMEM = {
 	{ STEP_TYPE_PIXELS, {.pixels=	{GREEN, GREEN}}},
 	{ STEP_TYPE_MOVE,	{.move=		{ARM_TURN_OFF,					  0, 255,   0}}},
 	{ STEP_TYPE_MOVE,	{.move=		{ARM_DOWN | LID_CLOSED, 		  0, 255,   0}}},
@@ -96,7 +154,7 @@ step_t fastest[] = {
 	{ 0 }
 };
 
-step_t quick_small_delayed[] = {
+const step_t quick_small_delayed[] PROGMEM = {
 	{ STEP_TYPE_PIXELS, {.pixels=	{RED, RED}}},
 	{ STEP_TYPE_MOVE,	{.move=		{LID_SMALL,						100,  30,   0}}},
 	{ STEP_TYPE_PIXELS, {.pixels=	{GREEN, GREEN}}},
@@ -108,7 +166,7 @@ step_t quick_small_delayed[] = {
 	{ 0 }
 };
 
-step_t fastest_no_ir[] = {
+const step_t fastest_no_ir[] PROGMEM = {
 	{ STEP_TYPE_PIXELS, {.pixels=	{RED, RED}}},
 	{ STEP_TYPE_MOVE,	{.move=		{ARM_TURN_OFF | WAIT_NO_IR,		  0, 255,   0}}},
 	{ STEP_TYPE_PIXELS, {.pixels=	{GREEN, GREEN}}},
@@ -120,7 +178,7 @@ step_t fastest_no_ir[] = {
 
 // flapper explicitly moves ARM_DOWN and LID_CLOSED to begin in case of ir_mode interrupt
 
-step_t lid_flapper[] = {
+const step_t lid_flapper[] PROGMEM = {
 	{ STEP_TYPE_MOVE,	{.move=		{ARM_DOWN | LID_CLOSED,			  0, 255,   0}}},
 	{ STEP_TYPE_PIXELS, {.pixels=	{GREEN, RED}}},
 	{ STEP_TYPE_MOVE,	{.move=		{LID_SMALL, 					  0, 255,   0}}},
@@ -138,7 +196,7 @@ step_t lid_flapper[] = {
 	{ 0 }
 };
 
-step_t arm_repeat[] = {
+const step_t arm_repeat[] PROGMEM = {
 	{ STEP_TYPE_PIXELS, {.pixels=	{MAGENTA, MAGENTA}}},
 	{ STEP_TYPE_MOVE,	{.move=		{LID_OPEN, 						100, 128,   0}}},
 	{ STEP_TYPE_PIXELS, {.pixels=	{RED, RED}}},
@@ -156,7 +214,7 @@ step_t arm_repeat[] = {
 	{ 0 }
 };
 
-step_t middle_flapper[] = {
+const step_t middle_flapper[] PROGMEM = {
 	{ STEP_TYPE_MOVE,	{.move=		{ARM_DOWN | LID_CLOSED,			  0, 255,   0}}},
 	{ STEP_TYPE_PIXELS, {.pixels=	{GREEN, RED}}},
 	{ STEP_TYPE_MOVE,	{.move=		{LID_SMALL, 					  0, 255,   0}}},
@@ -215,6 +273,9 @@ act_t acts[] = {
 // global variables
 //--------------------------------------
 
+int move_mode;
+uint32_t session_start = 0;
+
 bool in_act = false;
 int session_act_count = 0;
 int cur_act_num = -1;
@@ -228,23 +289,34 @@ bool ir_mode = false;
 
 void handle_ir();	// forward
 
+step_t ram_step;
+
+step_t *getStep(act_t act, int step_num)
+{
+	memcpy_P(&ram_step,&act[step_num],sizeof(step_t));
+	return &ram_step;
+}
+
+void set_move_mode(int mode)
+{
+	display(0,"set_move_mode(%d)",mode);
+
+	move_mode = mode;
+	session_act_count = 0;
+	cur_act_num = -1;
+	ir_mode = 0;
+    session_start = 0;
+}
 
 
 //--------------------------------------
 // act methods
 //--------------------------------------
 
-void start_act(bool new_session)
+void start_act()
 {
-	// a new session goes through the acts in order one time
-	// and then starts doing them in a random fashion
-
-	if (new_session)
-	{
-		session_act_count = 0;
-		cur_act_num = -1;
-		ir_mode = 0;
-	}
+	session_start = millis();
+		// update the session activity timer
 
 	wheels::setHeading();
 
@@ -280,7 +352,7 @@ void start_act(bool new_session)
 	if (session_act_count > NUM_ACTS)
 	{
 		cur_act_num = random(NUM_ACTS);
-		ir_mode = random(5);   // 1 in 5 chance of no ir mode
+		ir_mode = random(3);   // 1 in 3 chance of no ir mode
 	}
 	else
 	{
@@ -316,6 +388,16 @@ void process_act()
 {
 	if (!in_act)
 	{
+        // if not in an act, and no activity for a while, time out the session
+
+        #if TIMEOUT_SEESIONS
+            if (session_start && (now > session_start + SESSION_TIMEOUT))
+            {
+                set_move_mode(0);
+				return;
+            }
+        #endif
+
 		if (ir_mode)
 			handle_ir();
 		return;
@@ -326,7 +408,8 @@ void process_act()
 		return;
 	}
 
-	step_t *step = &cur_act[cur_step_num];
+	step_t *step = getStep(cur_act,cur_step_num);
+	// step_t *step = &cur_act[cur_step_num];
 	uint8_t step_type = step->step_type;
 	if (!step_type)
 	{
@@ -498,6 +581,11 @@ void handle_ir()
 	{
 		last_ir = ir;
 		ir_up_time = now;
+
+		// active IR counts as session activity
+
+		if (ir)
+			session_start = now;
 
 		switch (ir)
 		{

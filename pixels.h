@@ -11,6 +11,8 @@
 	#define PIXEL_LEFT		3
 	#define PIXEL_USER		6
 
+	#define EEPROM_BRIGHTNESS   16
+
 	extern Adafruit_NeoPixel pixels;
 
 	extern void init_pixels();

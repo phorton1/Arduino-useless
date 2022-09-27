@@ -4,6 +4,8 @@
 
 #include "useless.h"
 
+#define INFINITE_DURATION  255
+	// 255 means that you must explicitly call stop!!
 
 class wheels
 {
@@ -24,7 +26,8 @@ public:
 	static int read(uint8_t num);
 
 	// durations are in 100's of a second
-	// speeds are 0..90 !!
+	// speeds are 0..90 !! Note that the miniumum speed is 11/-11 as there is a
+	// dead band in the servo
 
 	static void left(uint8_t duration, uint8_t speed=90, uint8_t rate=0);
 	static void right(uint8_t duration, uint8_t speed=90, uint8_t rate=0);

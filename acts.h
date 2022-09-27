@@ -71,9 +71,14 @@
 	// return to heading from the start of the act
 
 
-void start_act(bool new_session);
+void start_act();
 	// the next act is started when the switch transitions to the on state
 	// interrupting any act that is currently in progress
 
 void process_act();
 	// called at frame rate - implements all behavior
+
+void set_move_mode(int mode);
+	// 0 = reset the interpreter (start new session)
+	// 1 = go to MOVE_MODE_1
+	// 2 = go to MOVE_MODE_2

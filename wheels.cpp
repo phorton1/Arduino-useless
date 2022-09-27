@@ -7,6 +7,11 @@
 
 #define DEBUG_WHEELS 	  0
 
+// Weirdness ...
+// For some reason the servo on wheel one has the opposite polarity of
+// wheel four (all other wheels) ....
+
+
 
 #define WHEEL_LEFT_FRONT  0
 #define WHEEL_LEFT_BACK   1
@@ -62,13 +67,14 @@ void wheels::update()
 		}
 	#endif
 
-	if (m_start_time && now > m_start_time + m_duration * 10)
+	if (m_start_time &&
+		m_duration != INFINITE_DURATION &&
+		now > m_start_time + m_duration * 10)
 	{
 		#if DEBUG_WHEELS
 			display(0,"move end",0);
 		#endif
 		stop();
-		m_start_time = 0;
 	}
 }
 
@@ -79,6 +85,7 @@ bool wheels::busy()
 
 void wheels::stop()
 {
+	m_start_time = 0;
 	for (int i=0; i<4; i++)
 	{
 		wheel_servo[i].write(90);
@@ -130,25 +137,28 @@ void wheels::move(const int *dir, uint8_t duration, uint8_t speed, uint8_t rate)
 	m_start_time = millis();
 }
 
+
+// for some reason wheel 1 and wheel4 have opposite polarities
+
 void wheels::left(uint8_t duration, uint8_t speed, uint8_t rate)
 {
-	const int dir[] = {1,-1,-1,1};
+	const int dir[] = {-1,-1,-1,1};
 	move(dir,duration,speed,rate);
 }
 
 void wheels::right(uint8_t duration, uint8_t speed, uint8_t rate)
 {
-	const int dir[] = {-1,1,1,-1};
+	const int dir[] = {1,1,1,-1};
 	move(dir,duration,speed,rate);
 }
 void wheels::cw(uint8_t duration, uint8_t speed, uint8_t rate)
 {
-	const int dir[] = {1,1,1,1};
+	const int dir[] = {-1,1,1,1};
 	move(dir,duration,speed,rate);
 }
 void wheels::ccw(uint8_t duration, uint8_t speed, uint8_t rate)
 {
-	const int dir[] = {-1,-1,-1,-1};
+	const int dir[] = {1,-1,-1,-1};
 	move(dir,duration,speed,rate);
 }
 
