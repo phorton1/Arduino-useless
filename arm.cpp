@@ -2,13 +2,14 @@
 
 #include "arm.h"
 #include <VarSpeedServo.h>
+#include <myDebug.h>
 
 
 #define ARM_UP_DEGREES 30
 #define ARM_OUT_DEGREES 60
 #define ARM_POISED_DEGREES 82
-#define ARM_OFF_DEGREES 90
-#define ARM_TURN_OFF_DEGREES 92
+#define ARM_OFF_DEGREES 95
+#define ARM_TURN_OFF_DEGREES 96
 
 
 bool arm::m_wait_off;
@@ -30,15 +31,33 @@ bool arm::busy()
 {
 	if (m_wait_off)
 	{
-		bool sw = !digitalRead(PIN_SWITCH);
-		if (!sw) m_wait_off = false;
+		if (!switch_state)
+		{
+			m_wait_off = false;
+		}
 	}
-	if (arm_servo.attached() && !arm_servo.isMoving())
+	else if (arm_servo.attached() && !arm_servo.isMoving())
 	{
 		arm_servo.detach();
 	}
 	return arm_servo.attached() || m_wait_off;
 }
+
+
+// pass thrus for debuggin
+bool arm::attached()
+{
+	return arm_servo.attached();
+}
+bool arm::moving()
+{
+	return arm_servo.isMoving();
+}
+int arm::read()
+{
+	return arm_servo.read();
+}
+
 
 void arm::stop()
 {
@@ -77,15 +96,12 @@ void arm::off_position(uint8_t rate)
 	arm_servo.write(ARM_OFF_DEGREES,rate,false);	// don't wait
 }
 
-bool arm::turn_off_switch(uint8_t rate)
+void arm::turn_off_switch(uint8_t rate)
 {
-	bool sw = !digitalRead(PIN_SWITCH);
-	if (sw)
+	if (switch_state)
 	{
 		arm_servo.attach(PIN_ARM);
 		arm_servo.write(ARM_TURN_OFF_DEGREES,rate,false);	// don't wait
 		m_wait_off = true;
 	}
-	return sw;
 }
-

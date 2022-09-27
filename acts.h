@@ -41,7 +41,6 @@
 #define STEP_TYPE_PIXELS	0x02
 #define STEP_TYPE_LOOP		0x03
 
-
 #define LID_CLOSED		0x0001
 #define LID_PEEK		0x0002
 #define LID_SMALL		0x0004
@@ -62,39 +61,20 @@
 	// waits for no ir then does the step
 
 
-
-#define WHEELS_LEFT		0x00001000
-#define WHEELS_RIGHT	0x00002000
-#define WHEELS_CLOCK	0x00004000
-#define WHEELS_COUNTER	0x00008000
+/*
+#define WHEELS_LEFT		0x1000
+#define WHEELS_RIGHT	0x2000
+#define WHEELS_CLOCK	0x4000
+#define WHEELS_COUNTER	0x8000
 	// these are given a duration in milliseconds
 	// where 150 is a burst and 2 seconds a rotation
 
 #define WHEELS_HEADING	0x00010000
 	// return to heading from the very first switch on
-
-#define STEP_LOOP 		0x00100000
-	// does not pay attention to switch state
-	// so should NOT include ARM_TURN_OFF_SWITCH or ARM_TURN_OFF_NO_IR
-	// will loop the prevous n steps x times, where x may be randomized over acts
-
-#define IR_DOOR_ARM_PRE_CYCLE	0x01000000
-	// does the DOOR_ARM pre-cycle with a rate that may be randomized over acts
-	// where the door opens and the am comes out as the IR signal increases.
-	// until the arm is in the "POISED" (switch off) or even
-	// "ARM_TURN_OFF_POSITION" (switch off and 'locked') position.
-	// THIS IS DROPPED THRU WHEN THE SWITCH TURNS ON (or upon a TIMEOUT?!?)
-	// This will typically be immediately followed by a ARM_TURN_OFF_NO_IR
-
-#define AVOIDANCE_PRE_LEFT_RIGHT 0x04000000
-	// does the left/right two step avoidance cycle until the switch is turned on.
-	// usually (maybe) start with WHEELS_HEADING, or add it to the mix
-#define AVOIDANCE_PRE_CLOCK		0x08000000
-	// does the clockwise/counter clockwise two step avoidance cycle until the switch is turned on.
-	// usually (maybe) start with WHEELS_HEADING, or add it to the mix
+*/
 
 
-int get_session_count();
+
 
 void start_act(bool new_session);
 	// the next act is started when the switch transitions to the on state

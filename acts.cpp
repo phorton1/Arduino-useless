@@ -56,6 +56,7 @@ typedef step_t *act_t;		// an act is an array of steps
 
 
 step_t normal_medium[] = {
+	{ STEP_TYPE_MOVE,	{.move=		{ARM_DOWN, 						  0, 255,   0}}},
 	{ STEP_TYPE_MOVE,	{.move=		{LID_OPEN, 						  0,  50,   0}}},
 	{ STEP_TYPE_MOVE,	{.move=		{ARM_TURN_OFF,					  0,  50,   0}}},
 	{ STEP_TYPE_MOVE,	{.move=		{ARM_DOWN, 						  0,  50,   0}}},
@@ -65,11 +66,12 @@ step_t normal_medium[] = {
 
 
 step_t quick_poised[] = {
+	{ STEP_TYPE_MOVE,	{.move=		{ARM_DOWN, 						  0, 255,   0}}},
 	{ STEP_TYPE_PIXELS, {.pixels=	{BLUE, BLUE}}},
 	{ STEP_TYPE_MOVE,	{.move=		{LID_OPEN, 		  				  0, 255,   0}}},
 	{ STEP_TYPE_PIXELS, {.pixels=	{MAGENTA, MAGENTA}}},
 	{ STEP_TYPE_MOVE,	{.move=		{ARM_POISED, 		 			 80, 255,   0}}},
-	{ STEP_TYPE_MOVE,	{.move=		{ARM_TURN_OFF,					100,  10,   0}}},
+	{ STEP_TYPE_MOVE,	{.move=		{ARM_TURN_OFF,					100, 128,   0}}},
 	{ STEP_TYPE_PIXELS, {.pixels=	{GREEN, GREEN}}},
 	{ STEP_TYPE_MOVE,	{.move=		{ARM_POISED,					  0,  10,   0}}},
 	{ STEP_TYPE_PIXELS, {.pixels=	{CYAN, CYAN}}},
@@ -84,7 +86,7 @@ step_t quick_poised[] = {
 step_t fastest[] = {
 	{ STEP_TYPE_PIXELS, {.pixels=	{GREEN, GREEN}}},
 	{ STEP_TYPE_MOVE,	{.move=		{ARM_TURN_OFF,					  0, 255,   0}}},
-	{ STEP_TYPE_MOVE,	{.move=		{ARM_DOWN, 						  0, 255,   0}}},
+	{ STEP_TYPE_MOVE,	{.move=		{ARM_DOWN | LID_CLOSED, 		  0, 255,   0}}},
 	{ STEP_TYPE_PIXELS, {.pixels=	{BLACK, BLACK}}},
 	{ 0 }
 };
@@ -93,7 +95,7 @@ step_t quick_small_delayed[] = {
 	{ STEP_TYPE_PIXELS, {.pixels=	{RED, RED}}},
 	{ STEP_TYPE_MOVE,	{.move=		{LID_SMALL,						100,  30,   0}}},
 	{ STEP_TYPE_PIXELS, {.pixels=	{GREEN, GREEN}}},
-	{ STEP_TYPE_MOVE,	{.move=		{ARM_TURN_OFF,		150, 255,   0}}},
+	{ STEP_TYPE_MOVE,	{.move=		{ARM_TURN_OFF,					150, 255,   0}}},
 	{ STEP_TYPE_PIXELS, {.pixels=	{BLUE, BLUE}}},
 	{ STEP_TYPE_MOVE,	{.move=		{ARM_DOWN, 						  0, 255,   0}}},
 	{ STEP_TYPE_MOVE,	{.move=		{LID_CLOSED, 					100,  50,   0}}},
@@ -105,19 +107,22 @@ step_t fastest_no_ir[] = {
 	{ STEP_TYPE_PIXELS, {.pixels=	{RED, RED}}},
 	{ STEP_TYPE_MOVE,	{.move=		{ARM_TURN_OFF | WAIT_NO_IR,		  0, 255,   0}}},
 	{ STEP_TYPE_PIXELS, {.pixels=	{GREEN, GREEN}}},
-	{ STEP_TYPE_MOVE,	{.move=		{ARM_DOWN, 						  0, 255,   0}}},
+	{ STEP_TYPE_MOVE,	{.move=		{ARM_DOWN | LID_CLOSED, 		  0, 255,   0}}},
 	{ STEP_TYPE_PIXELS, {.pixels=	{BLACK, BLACK}}},
 	{ 0 }
 };
 
 
+// flapper explicitly moves ARM_DOWN and LID_CLOSED to begin in case of ir_mode interrupt
+
 step_t lid_flapper[] = {
-	{ STEP_TYPE_PIXELS, {.pixels=	{RED, RED}}},
+	{ STEP_TYPE_MOVE,	{.move=		{ARM_DOWN | LID_CLOSED,			  0, 255,   0}}},
+	{ STEP_TYPE_PIXELS, {.pixels=	{GREEN, RED}}},
 	{ STEP_TYPE_MOVE,	{.move=		{LID_SMALL, 					  0, 255,   0}}},
-	{ STEP_TYPE_PIXELS, {.pixels=	{GREEN, GREEN}}},
+	{ STEP_TYPE_PIXELS, {.pixels=	{GREEN, RED}}},
 	{ STEP_TYPE_MOVE,	{.move=		{LID_CLOSED, 					  0, 255,   0}}},
-	{ STEP_TYPE_PIXELS, {.pixels=	{RED, RED}}},
-	{ STEP_TYPE_LOOP,   {.loop=		{5,7}}},
+	{ STEP_TYPE_PIXELS, {.pixels=	{RED, GREEN}}},
+	{ STEP_TYPE_LOOP,   {.loop=		{5,10}}},
 	{ STEP_TYPE_PIXELS, {.pixels=	{BLUE, BLUE}}},
 	{ STEP_TYPE_MOVE,	{.move=		{LID_SMALL,						100,  50,   0}}},
 	{ STEP_TYPE_PIXELS, {.pixels=	{CYAN, CYAN}}},
@@ -136,7 +141,7 @@ step_t arm_repeat[] = {
 	{ STEP_TYPE_PIXELS, {.pixels=	{MAGENTA, MAGENTA}}},
 	{ STEP_TYPE_MOVE,	{.move=		{ARM_POISED,				     0, 255,   0}}},
 	{ STEP_TYPE_PIXELS, {.pixels=	{RED, RED}}},
-	{ STEP_TYPE_LOOP,   {.loop=		{5,7}}},
+	{ STEP_TYPE_LOOP,   {.loop=		{5,10}}},
 	{ STEP_TYPE_PIXELS, {.pixels=	{GREEN, GREEN}}},
 	{ STEP_TYPE_MOVE,	{.move=		{ARM_TURN_OFF,					100, 255,   0}}},
 	{ STEP_TYPE_PIXELS, {.pixels=	{BLUE, BLUE}}},
@@ -146,9 +151,39 @@ step_t arm_repeat[] = {
 	{ 0 }
 };
 
+step_t middle_flapper[] = {
+	{ STEP_TYPE_MOVE,	{.move=		{ARM_DOWN | LID_CLOSED,			  0, 255,   0}}},
+	{ STEP_TYPE_PIXELS, {.pixels=	{GREEN, RED}}},
+	{ STEP_TYPE_MOVE,	{.move=		{LID_SMALL, 					  0, 255,   0}}},
+	{ STEP_TYPE_PIXELS, {.pixels=	{GREEN, RED}}},
+	{ STEP_TYPE_MOVE,	{.move=		{LID_CLOSED, 					  0, 255,   0}}},
+	{ STEP_TYPE_PIXELS, {.pixels=	{RED, GREEN}}},
+	{ STEP_TYPE_LOOP,   {.loop=		{5,8}}},
+
+	{ STEP_TYPE_PIXELS, {.pixels=	{BLUE, BLUE}}},
+	{ STEP_TYPE_MOVE,	{.move=		{LID_SMALL,						  0, 255,   0}}},
+	{ STEP_TYPE_PIXELS, {.pixels=	{CYAN, CYAN}}},
+	{ STEP_TYPE_MOVE,	{.move=		{ARM_TURN_OFF,					  0, 255,   0}}},
+	{ STEP_TYPE_MOVE,	{.move=		{ARM_DOWN | LID_CLOSED, 		  0, 255,   0}}},
+
+	{ STEP_TYPE_PIXELS, {.pixels=	{GREEN, RED}}},
+	{ STEP_TYPE_MOVE,	{.move=		{LID_SMALL, 					  0, 255,   0}}},
+	{ STEP_TYPE_PIXELS, {.pixels=	{GREEN, RED}}},
+	{ STEP_TYPE_MOVE,	{.move=		{LID_CLOSED, 					  0, 255,   0}}},
+	{ STEP_TYPE_PIXELS, {.pixels=	{RED, GREEN}}},
+	{ STEP_TYPE_LOOP,   {.loop=		{5,8}}},
+
+	{ STEP_TYPE_PIXELS, {.pixels=	{BLACK, BLACK}}},
+	{ 0 }
+};
+
+
+//--------------------------------------
+// list of acts
+//--------------------------------------
+
 
 act_t acts[] = {
-
 	normal_medium,
 	quick_poised,
 	fastest,
@@ -157,10 +192,13 @@ act_t acts[] = {
 	fastest_no_ir,
 	arm_repeat,
 	quick_poised,
+	lid_flapper,
 	fastest,
 	fastest_no_ir,
 	fastest_no_ir,
-	lid_flapper,
+	middle_flapper,
+	fastest,
+	fastest_no_ir,
 };
 
 
@@ -168,22 +206,31 @@ act_t acts[] = {
 
 
 
+//--------------------------------------
+// global variables
+//--------------------------------------
 
 bool in_act = false;
 int session_act_count = 0;
 int cur_act_num = -1;
 act_t cur_act;
+
 int loop_count = 0;
 int cur_step_num = 0;
 
+bool ir_mode = false;
 
 
+void handle_ir();	// forward
+
+
+
+//--------------------------------------
+// act methods
+//--------------------------------------
 
 void start_act(bool new_session)
 {
-	arm::stop();
-	lid::stop();
-
 	// a new session goes through the acts in order one time
 	// and then starts doing them in a random fashion
 
@@ -191,8 +238,8 @@ void start_act(bool new_session)
 	{
 		session_act_count = 0;
 		cur_act_num = -1;
+		ir_mode = 0;
 	}
-
 
 	// display the "light" as the act_count % 15 as left to right white user pixels
 
@@ -223,8 +270,14 @@ void start_act(bool new_session)
 
 	session_act_count++;
 
-	#if 0
-		if (session_act_count >= NUM_ACTS)
+	if (session_act_count > 15)
+	{
+		int num =session_act_count - 10;
+		ir_mode = random(num) > 2;
+	}
+
+	#if 1
+		if (session_act_count > NUM_ACTS)
 			cur_act_num = random(NUM_ACTS);
 		else
 	#endif
@@ -238,6 +291,21 @@ void start_act(bool new_session)
 	cur_step_num = 0;
 	loop_count = 0;
 	in_act = true;
+
+	#if 0
+		display(0,"act(%d) sw(%d) ir(%d) arm(%d:%d:%d:%d) lid(%d:%d:%d:%d)",
+				cur_act_num,
+				switch_state,
+				ir_mode,
+				arm::busy(),
+				arm::attached(),
+				arm::moving(),
+				arm::read(),
+				lid::busy(),
+				lid::attached(),
+				lid::moving(),
+				lid::read());
+	#endif
 }
 
 
@@ -245,10 +313,16 @@ void start_act(bool new_session)
 void process_act()
 {
 	if (!in_act)
+	{
+		if (ir_mode)
+			handle_ir();
 		return;
+	}
 
 	if (arm::busy() || lid::busy())
+	{
 		return;
+	}
 
 	step_t *step = &cur_act[cur_step_num];
 	uint8_t step_type = step->step_type;
@@ -257,6 +331,21 @@ void process_act()
 		in_act = false;
 		return;
 	}
+
+	#if 0
+		display(0," st(%d) sw(%d) ir(%d) arm(%d:%d:%d:%d) lid(%d:%d:%d:%d)",
+				cur_step_num,
+				switch_state,
+				ir_mode,
+				arm::busy(),
+				arm::attached(),
+				arm::moving(),
+				arm::read(),
+				lid::busy(),
+				lid::attached(),
+				lid::moving(),
+				lid::read());
+	#endif
 
 	if (step_type == STEP_TYPE_MOVE)
 	{
@@ -269,7 +358,10 @@ void process_act()
 				int16_t r = 0;
 				read_ir(&l,&r);
 				if ((l > 5) || (r > 5))
+				{
+					// display(0,"return no_ir",0);
 					return;
+				}
 			}
 		#endif
 
@@ -318,7 +410,7 @@ void process_act()
 	}
 	else if (step_type == STEP_TYPE_LOOP)
 	{
-		if (loop_count < step->loop.num_repeats)
+		if (loop_count < 2 + random(step->loop.num_repeats))
 		{
 			cur_step_num -= step->loop.num_steps;
 			loop_count++;
@@ -330,4 +422,97 @@ void process_act()
 
 	cur_step_num++;
 
+}
+
+
+//-----------------------------
+// ir handler
+//-----------------------------
+
+#define IR_CUTOFF1		5
+#define IR_CUTOFF2     15
+#define IR_CUTOFF3	   25
+#define IR_CUTOFF4     40
+#define IR_CUTOFF5	   70
+
+
+void setInsidePixels(uint8_t r, uint8_t g, uint8_t b)
+{
+	for (int i=0; i<PIXEL_USER; i++)
+		pixels.setPixelColor(i,r,g,b);
+	pixels.show();
+}
+
+void handle_ir()
+{
+	if (arm::busy() || lid::busy())
+		return;
+
+	static int last_ir = 0;
+	static uint32_t ir_up_time = 0;
+
+	int16_t l = 0;
+	int16_t r = 0;
+	read_ir(&l,&r);
+
+	// display(0,"ir %d %d",l,r);
+
+	int ir = 0;
+	if ((l > IR_CUTOFF5) || (r > IR_CUTOFF5))
+		ir = 5;
+	else if ((l > IR_CUTOFF4) || (r > IR_CUTOFF4))
+		ir = 4;
+	else if ((l > IR_CUTOFF3) || (r > IR_CUTOFF3))
+		ir = 3;
+	else if ((l > IR_CUTOFF2) || (r > IR_CUTOFF2))
+		ir = 2;
+	else if ((l > IR_CUTOFF1) || (r > IR_CUTOFF1))
+		ir = 1;
+
+	// moves up happen immediately
+	// moves down happen after a second
+
+	uint32_t now = millis();
+
+	if (ir > last_ir || (
+		ir < last_ir &&
+		now > ir_up_time + 400 ))
+	{
+		last_ir = ir;
+		ir_up_time = now;
+
+		switch (ir)
+		{
+			case 5:
+				setInsidePixels(255,0,0);
+				lid::small(128);
+				arm::poised(128);
+				break;
+			case 4:
+				setInsidePixels(200,0,50);
+				lid::small(128);
+				arm::poised(128);
+				break;
+			case 3:
+				setInsidePixels(180,0,100);
+				lid::small(128);
+				arm::out(128);
+				break;
+			case 2:
+				setInsidePixels(128,0,100);
+				lid::small(128);
+				arm::up(128);
+				break;
+			case 1:
+				setInsidePixels(100,0,100);
+				lid::peek(128);
+				arm::down(128);
+				break;
+			case 0:
+				setInsidePixels(0,0,0);
+				lid::close(128);
+				arm::down(128);
+				break;
+		}
+	}
 }

@@ -3,7 +3,7 @@
 #include "lid.h"
 #include <VarSpeedServo.h>
 
-#define LID_PEEK_DEGREES  15
+#define LID_PEEK_DEGREES  20
 #define LID_SMALL_DEGREES 30
 #define LID_OPEN_DEGREES  47
 
@@ -35,6 +35,22 @@ void lid::stop()
 	lid_servo.stop();
 	lid_servo.detach();
 }
+
+
+// pass thrus for debuggin
+bool lid::attached()
+{
+	return lid_servo.attached();
+}
+bool lid::moving()
+{
+	return lid_servo.isMoving();
+}
+int lid::read()
+{
+	return lid_servo.read();
+}
+
 
 
 void lid::close(uint8_t rate)

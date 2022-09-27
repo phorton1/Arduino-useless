@@ -66,6 +66,9 @@ void setup()
 
 void restart_session()
 {
+    extern bool ir_mode;    // in acts.cpp
+    ir_mode = false;
+
     #if WITH_PIXELS
         for (int i=0; i<5; i++)
             pixels.setPixelColor(PIXEL_USER+i,255,0,0);
@@ -82,7 +85,6 @@ void restart_session()
 
 void loop()
 {
-
     uint32_t now = millis();
     if (now > frame_time + 30)
     {
@@ -109,10 +111,12 @@ void loop()
 
         // time out session flashing red once
 
-        if (session_start && (now > session_start + SESSION_TIMEOUT))
-        {
-            restart_session();
-        }
+        #if 0
+            if (session_start && (now > session_start + SESSION_TIMEOUT))
+            {
+                restart_session();
+            }
+        #endif
 
         process_act();
 
