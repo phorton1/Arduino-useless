@@ -50,12 +50,12 @@
 #define ARM_UP			0x0020
 #define ARM_OUT			0x0040
 #define ARM_POISED		0x0080
+#define ARM_OFF_POS		0x0100
 
-
-#define ARM_TURN_OFF			0x0100
+#define ARM_TURN_OFF			0x0200
 	// TRANSITION TO SWTICH OFF STATE
 	// invariant moves to 92+ degrees or until the switch goes off
-#define WAIT_NO_IR				0x0200
+#define WAIT_NO_IR				0x0400
 	// waits for no ir then does the step
 
 #define WHEELS_LEFT		0x1000

@@ -23,6 +23,9 @@ uint32_t frame_time = 0;
 
 void setup()
 {
+    lid::init();
+
+
     Serial.begin(115200);
     display(0,"useless.ino v1.0 started ...",0);
 
@@ -46,7 +49,6 @@ void setup()
 
     arm::init();
 
-    lid::init();
 
     wheels::init();
 
