@@ -5,7 +5,7 @@
 #include <myDebug.h>
 #include "compass.h"
 
-#define DEBUG_WHEELS 	  1
+#define DEBUG_WHEELS 	  0
 
 // Weirdness ...
 // For some reason the servo on wheel one has the opposite polarity of
@@ -60,7 +60,7 @@ void wheels::update()
 	#if WITH_COMPASS
 		if (m_home_time)
 		{
-			if (now > m_home_time)	// every millisecond
+			if (now > m_home_time + 30)	// every millisecond
 			{
 				m_home_time = now;
 				home(false);
@@ -181,23 +181,42 @@ void wheels::home(bool cold)
 
 		if (cold)
 		{
+			#if DEBUG_WHEELS
+				display(0,"stopping",0);
+			#endif
+
+			delay(20);
+			stop();
+			delay(20);
+			for (int i=0; i<5; i++)
+			{
+				delay(10);
+				read_compass_heading();
+			}
 			last_dir = 0;
 			last_speed = 0;
 			m_home_time = 0;
 		}
 
-		int heading = read_compass_heading();		// 0..359
+		int heading;
+		for (int i=0; i<5; i++)
+			heading = read_compass_heading();		// 0..359
+
+		#if DEBUG_WHEELS
+			display(0,"heading=%d",heading);
+		#endif
+
 		int diff = heading - m_heading;
 		if (diff >  180) diff -= 360;
 		if (diff < -180) diff += 360;
 		if (diff < -2)
 		{
-			speed = diff<-20?10:10;
+			speed = diff<-15?50:10;
 			dir = -1;
 		}
 		else if (diff > 2)
 		{
-			speed = diff>20?10:10;
+			speed = diff>15?50:10;
 			dir = 1;
 		}
 
@@ -208,16 +227,19 @@ void wheels::home(bool cold)
 		if (last_speed != speed ||
 			last_dir != dir)
 		{
+			stop();
+			delay(20);
+
 			last_speed = speed;
 			last_dir = dir;
 			if (dir == -1)
 			{
-				ccw(255, speed, 0);
+				ccw(180, speed, 0);
 				m_home_time = millis();
 			}
 			else if (dir == 1)
 			{
-				cw(255, speed, 0);
+				cw(180, speed, 0);
 				m_home_time = millis();
 			}
 			else

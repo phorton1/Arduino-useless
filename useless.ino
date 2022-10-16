@@ -25,8 +25,8 @@ void setup()
 {
     lid::init();
 
-
     Serial.begin(115200);
+    delay(200);
     display(0,"useless.ino v1.0 started ...",0);
 
     randomSeed(analogRead(0));

@@ -40,6 +40,9 @@
 #define STEP_TYPE_MOVE  	0x01
 #define STEP_TYPE_PIXELS	0x02
 #define STEP_TYPE_LOOP		0x04
+#define STEP_TYPE_RANDOM    0x05
+	// introduce a random move
+
 
 #define LID_CLOSED		0x0001
 #define LID_PEEK		0x0002

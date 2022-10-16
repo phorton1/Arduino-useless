@@ -78,8 +78,11 @@
         int16_t my = 0;
         int16_t mz = 0;
 
-        compass.getHeading(&mx, &my, &mz);
-
+        for (int i=0; i<5; i++)
+        {
+            compass.getHeading(&mx, &my, &mz);
+            delay(1);
+        }
         if (calibration_state == 1)
         {
             bool dbg = 0;
