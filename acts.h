@@ -26,7 +26,7 @@
 //
 // Steps can be of several basic types:
 //  	- Servo Moves with positions and rates
-//      - Wheel Moves with ratesdurations
+//      - Wheel Moves with rates and durations
 //      - Pixel Changes
 //      - Control Steps
 
@@ -70,6 +70,20 @@
 #define WHEELS_HOME		0x0800
 	// return to heading from the start of the act
 
+
+// wheel times
+
+#if USELESS_VERSION == 1
+	#define WHEEL_TIME  	3
+	#define ROTATE_TIME 	230
+	#define OBS_BURST  		12
+#else
+	// version 2 has no compass, rotate time determined heuristically
+
+	#define WHEEL_TIME  	3
+	#define ROTATE_TIME 	190
+	#define OBS_BURST  		12
+#endif
 
 
 void start_act();

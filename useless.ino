@@ -110,7 +110,57 @@ void loop()
         process_act();
 
         handle_buttons();
+
+        #if WITH_IR
+        #if TEST_IR
+            int tl,tr;
+            read_ir(&tl,&tr);
+            display(0,"TEST_IR(%d,%d)",tl,tr);
+        #endif
+        #endif
     }
+
+    #if TEST_MODE
+
+    static int what = 0;
+    static int count = 0;
+
+    if (Serial.available())
+    {
+        int c = Serial.read();
+        if (c == 'c')       // cw
+        {
+            display(0,"wheels::cw(%d)",WHEEL_TIME);
+            wheels::cw(WHEEL_TIME);
+        }
+        else if (c == 'w')  // ccw
+        {
+            display(0,"wheels.ccw(%d)",WHEEL_TIME);
+            wheels::ccw(WHEEL_TIME);
+        }
+        else if (c == 'r')  //  move to right
+        {
+            display(0,"wheels::right(%d)",WHEEL_TIME);
+            wheels::right(WHEEL_TIME);
+        }
+        else if (c == 'l')  // move to left
+        {
+            display(0,"wheels::left(%d)",WHEEL_TIME);
+            wheels::left(WHEEL_TIME);
+        }
+        else if (c == '+')  // rotate clockwise
+        {
+            display(0,"wheels::rotate_cw(%d)",ROTATE_TIME);
+            wheels::cw(ROTATE_TIME);
+        }
+        else if (c == '-')  // rotate counter clockwise
+        {
+            display(0,"wheels::rotate_ccw(%d)",ROTATE_TIME);
+            wheels::ccw(ROTATE_TIME);
+        }
+
+    }
+    #endif
 
     wheels::update();
         // wheel updating has it's own 1ms frame rate

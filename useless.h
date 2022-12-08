@@ -4,6 +4,12 @@
 
 #include <Arduino.h>
 
+#define USELESS_VERSION		2
+	// Version 1 is my original box
+	// Version 2 is the one I made for Daniel
+	//    no compass, uses different constants
+
+
 
 #define PIN_ARM				2
 #define PIN_LID		  		3
@@ -35,6 +41,16 @@
 
 #define WITH_PIXELS			1
 #define WITH_IR				1
-#define WITH_COMPASS		1
+
+#if USELESS_VERSION == 1
+	#define WITH_COMPASS		1
+#else
+	#define WITH_COMPASS		0
+#endif
+
+#define TEST_IR				0
+#define TEST_MODE			0
+
+
 
 extern bool switch_state;

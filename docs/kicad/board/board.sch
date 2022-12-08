@@ -28,14 +28,10 @@ Text GLabel 5050 3050 1    50   Input ~ 0
 L_IR
 Text GLabel 4850 3050 1    50   Input ~ 0
 R_IR
-Text GLabel 5150 3050 1    50   Input ~ 0
-U_IR
 Text GLabel 4550 3050 1    50   Input ~ 0
 L_SENS
 Text GLabel 4950 3050 1    50   Input ~ 0
 R_SENS
-Text GLabel 5450 3050 1    50   Input ~ 0
-U_SENS
 Text GLabel 4650 3850 3    50   Input ~ 0
 WHEEL_1
 Text GLabel 4750 3850 3    50   Input ~ 0
@@ -378,49 +374,12 @@ F 3 "" H 4100 1550 50  0001 C CNN
 	1    4100 1550
 	-1   0    0    1   
 $EndComp
-$Comp
-L Connector_Generic:Conn_01x04 J4
-U 1 1 63300773
-P 4650 1350
-F 0 "J4" V 4850 1350 50  0000 R CNN
-F 1 "UNUSED" V 4750 1300 50  0000 C CNN
-F 2 "cnc3018-PCB:my4pin" H 4650 1350 50  0001 C CNN
-F 3 "~" H 4650 1350 50  0001 C CNN
-	1    4650 1350
-	0    -1   -1   0   
-$EndComp
-$Comp
-L power:GND #PWR06
-U 1 1 63300779
-P 4550 1550
-F 0 "#PWR06" H 4550 1300 50  0001 C CNN
-F 1 "GND" V 4550 1350 50  0000 C CNN
-F 2 "" H 4550 1550 50  0001 C CNN
-F 3 "" H 4550 1550 50  0001 C CNN
-	1    4550 1550
-	1    0    0    -1  
-$EndComp
-$Comp
-L power:+5V #PWR07
-U 1 1 6330077F
-P 4650 1550
-F 0 "#PWR07" H 4650 1400 50  0001 C CNN
-F 1 "+5V" V 4650 1750 50  0000 C CNN
-F 2 "" H 4650 1550 50  0001 C CNN
-F 3 "" H 4650 1550 50  0001 C CNN
-	1    4650 1550
-	-1   0    0    1   
-$EndComp
 Text GLabel 3700 1550 3    50   Input ~ 0
 L_SENS
-Text GLabel 4850 1550 3    50   Input ~ 0
-U_SENS
 Text GLabel 4300 1550 3    50   Input ~ 0
 R_SENS
 Text GLabel 3600 1550 3    50   Input ~ 0
 L_IR
-Text GLabel 4750 1550 3    50   Input ~ 0
-U_IR
 Text GLabel 4200 1550 3    50   Input ~ 0
 R_IR
 $Comp

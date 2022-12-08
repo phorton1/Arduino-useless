@@ -143,27 +143,46 @@ void wheels::move(const int *dir, uint8_t duration, uint8_t speed, uint8_t rate)
 }
 
 
-// for some reason wheel 1 and wheel4 have opposite polarities
+// for some reason on version 1, wheel 1 and wheel4 have opposite polarities
+// on version 2 they have the same polarity, but are backwards from version 1
 
 void wheels::left(uint8_t duration, uint8_t speed, uint8_t rate)
 {
-	const int dir[] = {-1,-1,-1,1};
+	#if USELESS_VERSION == 1
+		const int dir[] = {-1,-1,-1,1};
+	#else
+		const int dir[] = {1,-1,-1,1};
+	#endif
 	move(dir,duration,speed,rate);
 }
 
 void wheels::right(uint8_t duration, uint8_t speed, uint8_t rate)
 {
-	const int dir[] = {1,1,1,-1};
+	#if USELESS_VERSION == 1
+		const int dir[] = {1,1,1,-1};
+	#else
+		const int dir[] = {-1,1,1,-1};
+	#endif
+
 	move(dir,duration,speed,rate);
 }
 void wheels::cw(uint8_t duration, uint8_t speed, uint8_t rate)
 {
-	const int dir[] = {-1,1,1,1};
+	#if USELESS_VERSION == 1
+		const int dir[] = {-1,1,1,1};
+	#else
+		const int dir[] = {1,1,1,1};
+	#endif
+
 	move(dir,duration,speed,rate);
 }
 void wheels::ccw(uint8_t duration, uint8_t speed, uint8_t rate)
 {
-	const int dir[] = {1,-1,-1,-1};
+	#if USELESS_VERSION == 1
+		const int dir[] = {1,-1,-1,-1};
+	#else
+		const int dir[] = {-1,-1,-1,-1};
+	#endif
 	move(dir,duration,speed,rate);
 }
 

@@ -2,7 +2,16 @@
 
 #include "ir.h"
 
+// LED wiring to the board.
+// The long lead is the +Anode, and the short lead is the -Cathode.
+// The Clear 940 nm emitter is wired in the normal fashion.
+// The Black 940 nm receiver is wired backwards, with the cathode connected
+//   to +5V, and the anode (sensor pin) connected to ground through a 10k resistor.
+
 #if WITH_IR
+
+	#define TEST_IR   1
+
 
 	#define IR_FUDGE  50
 

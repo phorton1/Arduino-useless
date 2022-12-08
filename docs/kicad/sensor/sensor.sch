@@ -159,4 +159,6 @@ Wire Wire Line
 	4250 1450 4250 1650
 Wire Wire Line
 	4250 1650 4600 1650
+Text Notes 2500 3750 0    59   ~ 0
+The long lead is the +Anode, and the short lead is the -Cathode.\n\nThe Clear 940 nm emitter is wired in the normal fashion.\n\nThe Black 940 nm receiver is wired backwards, with the cathode connected\nto +5V, and the anode (sensor pin) connected to ground through a 10k resistor.\n
 $EndSCHEMATC

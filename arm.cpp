@@ -4,6 +4,7 @@
 #include <VarSpeedServo.h>
 #include <myDebug.h>
 
+#define DEBUG_ARM    0
 
 #define ARM_UP_DEGREES 30
 #define ARM_OUT_DEGREES 60
@@ -70,30 +71,45 @@ void arm::down(uint8_t rate)
 {
 	arm_servo.attach(PIN_ARM);
 	arm_servo.write(0,rate,false);	// don't wait
+	#if DEBUG_ARM
+		display(0,"arm_down(%d)",0);
+	#endif
 }
 
 void arm::up(uint8_t rate)
 {
 	arm_servo.attach(PIN_ARM);
 	arm_servo.write(ARM_UP_DEGREES,rate,false);	// don't wait
+	#if DEBUG_ARM
+		display(0,"arm_up(%d)",ARM_UP_DEGREES);
+	#endif
 }
 
 void arm::out(uint8_t rate)
 {
 	arm_servo.attach(PIN_ARM);
 	arm_servo.write(ARM_OUT_DEGREES,rate,false);	// don't wait
+	#if DEBUG_ARM
+		display(0,"arm_out(%d)",ARM_OUT_DEGREES);
+	#endif
 }
 
 void arm::poised(uint8_t rate)
 {
 	arm_servo.attach(PIN_ARM);
 	arm_servo.write(ARM_POISED_DEGREES,rate,false);	// don't wait
+	#if DEBUG_ARM
+		display(0,"arm_poised(%d)",ARM_POISED_DEGREES);
+	#endif
 }
 
 void arm::off_position(uint8_t rate)
 {
 	arm_servo.attach(PIN_ARM);
 	arm_servo.write(ARM_OFF_DEGREES,rate,false);	// don't wait
+	#if DEBUG_ARM
+		display(0,"arm_off(%d)",ARM_OFF_DEGREES);
+	#endif
 }
 
 void arm::turn_off_switch(uint8_t rate)
@@ -102,6 +118,9 @@ void arm::turn_off_switch(uint8_t rate)
 	{
 		arm_servo.attach(PIN_ARM);
 		arm_servo.write(ARM_TURN_OFF_DEGREES,rate,false);	// don't wait
+		#if DEBUG_ARM
+			display(0,"arm_turn_off(%d)",ARM_TURN_OFF_DEGREES);
+		#endif
 		m_wait_off = true;
 	}
 }

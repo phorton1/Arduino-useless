@@ -8,6 +8,26 @@
 #include "pixels.h"
 #include "myDebug.h"
 
+#define DEBUG_ACT  		0
+
+
+#if USELESS_VERSION == 1
+	#define IR_CUTOFF1		5
+	#define IR_CUTOFF2     15
+	#define IR_CUTOFF3	   25
+	#define IR_CUTOFF4     40
+	#define IR_CUTOFF5	   70
+#else
+	#define IR_CUTOFF1	   15
+	#define IR_CUTOFF2     30
+	#define IR_CUTOFF3	   60
+	#define IR_CUTOFF4     90
+	#define IR_CUTOFF5	   128
+#endif
+
+
+
+
 // The "program" proceeds through passes, based on the number of defined acts,
 // increasing in random and more agressive behavior as it goes through the passes.
 //
@@ -51,8 +71,6 @@
 //      starts taking place if AG, and if AGRESSION is set to a certain
 //
 //
-
-#define DEBUG_ACT  0
 
 
 #define TIMEOUT_SEESIONS   0
@@ -170,7 +188,7 @@ const step_t quick_small_delayed[] PROGMEM = {
 	{ STEP_TYPE_MOVE,	0,0,	{.move=		{ARM_TURN_OFF,					150,50,150, 	255,   0}}},
 	{ STEP_TYPE_PIXELS, 0,0,	{.pixels=	{BLUE, BLUE}}},
 	{ STEP_TYPE_MOVE,	0,0,	{.move=		{ARM_DOWN, 						0,0,0,			255,   0}}},
-	{ STEP_TYPE_MOVE,	0,0,	{.move=		{LID_CLOSED, 					100,0,100,  	 40,    0}}},
+	{ STEP_TYPE_MOVE,	0,0,	{.move=		{LID_CLOSED, 					100,0,100,  	 40,   0}}},
 	{ STEP_TYPE_PIXELS, 0,0,	{.pixels=	{BLACK, BLACK}}},
 	{ 0 }
 };
@@ -188,7 +206,7 @@ const step_t fastest_no_ir[] PROGMEM = {
 
 const step_t arm_repeat[] PROGMEM = {
 	{ STEP_TYPE_PIXELS, 0,0,	{.pixels=	{MAGENTA, MAGENTA}}},
-	{ STEP_TYPE_MOVE,	0,0,	{.move=		{LID_OPEN, 						100,0,100, 		80,   0}}},
+	{ STEP_TYPE_MOVE,	0,0,	{.move=		{LID_OPEN, 						100,0,100, 		80,    0}}},
 	{ STEP_TYPE_RANDOM },
 	{ STEP_TYPE_PIXELS, 0,0,	{.pixels=	{RED, RED}}},
 	{ STEP_TYPE_MOVE,	0,0,	{.move=		{ARM_UP, 					  	0,0,0,			255,   0}}},
@@ -243,9 +261,6 @@ const step_t flapper[] PROGMEM = {
 // the whole sequence. for the time being they should not be in loops as we do not preserve
 // the loop counter.
 
-
-#define WHEEL_TIME  3
-#define ROTATE_TIME 230
 
 #define MP2 2
 #define MP3 3
@@ -526,8 +541,6 @@ void process_act()
             }
         #endif
 
-
-
 		if (ir_mode)
 			handle_ir();
 		else if (obs_mode)
@@ -746,13 +759,6 @@ void process_act()
 // ir handler
 //-----------------------------
 
-#define IR_CUTOFF1		5
-#define IR_CUTOFF2     15
-#define IR_CUTOFF3	   25
-#define IR_CUTOFF4     40
-#define IR_CUTOFF5	   70
-
-
 void setInsidePixels(uint8_t r, uint8_t g, uint8_t b)
 {
 	for (int i=0; i<PIXEL_USER; i++)
@@ -852,7 +858,7 @@ void handle_obs()
 	if (millis() < last_obs + 200)
 		return;
 
-	#define OBS_BURST  12
+
 	int16_t l = 0;
 	int16_t r = 0;
 	read_ir(&l,&r);
