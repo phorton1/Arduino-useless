@@ -95,8 +95,6 @@ Connection ~ 3600 2000
 Wire Wire Line
 	3600 2000 3950 2000
 Wire Wire Line
-	4250 2000 4300 2000
-Wire Wire Line
 	4500 2000 4500 2300
 Wire Wire Line
 	4500 2000 4500 1750
@@ -125,32 +123,6 @@ Wire Wire Line
 	4050 1450 4050 1750
 Wire Wire Line
 	3950 1450 3950 1750
-$Comp
-L power:GND #PWR0101
-U 1 1 632B7AC5
-P 3600 2700
-F 0 "#PWR0101" H 3600 2450 50  0001 C CNN
-F 1 "GND" H 3605 2527 50  0000 C CNN
-F 2 "" H 3600 2700 50  0001 C CNN
-F 3 "" H 3600 2700 50  0001 C CNN
-	1    3600 2700
-	1    0    0    -1  
-$EndComp
-Connection ~ 3600 2700
-$Comp
-L power:+5V #PWR0102
-U 1 1 632B84AF
-P 4300 2000
-F 0 "#PWR0102" H 4300 1850 50  0001 C CNN
-F 1 "+5V" H 4315 2173 50  0000 C CNN
-F 2 "" H 4300 2000 50  0001 C CNN
-F 3 "" H 4300 2000 50  0001 C CNN
-	1    4300 2000
-	1    0    0    -1  
-$EndComp
-Connection ~ 4300 2000
-Wire Wire Line
-	4300 2000 4500 2000
 Wire Wire Line
 	4150 1550 4150 1450
 Wire Wire Line
@@ -159,6 +131,8 @@ Wire Wire Line
 	4250 1450 4250 1650
 Wire Wire Line
 	4250 1650 4600 1650
-Text Notes 2500 3750 0    59   ~ 0
+Wire Wire Line
+	4250 2000 4500 2000
+Text Notes 2500 3750 0    59   ~ 12
 The long lead is the +Anode, and the short lead is the -Cathode.\n\nThe Clear 940 nm emitter is wired in the normal fashion.\n\nThe Black 940 nm receiver is wired backwards, with the cathode connected\nto +5V, and the anode (sensor pin) connected to ground through a 10k resistor.\n
 $EndSCHEMATC
