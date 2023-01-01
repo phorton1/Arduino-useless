@@ -11,7 +11,7 @@ For the fun of it, I mada a **Useless Box**.
 
 **Insert YouTube Demo movie here**
 
-All of the **fusion360 files* and the **STL** and **DXF** files exported from fusion, as well as
+All of the **fusion360 files** and the **STL** and **DXF** files exported from fusion, as well as
 the **Prusa Slicer** and **Gcode** files and **Lightburn** projects I then used to print the
 plastic parts and laser cut the wood can be found in the following subdirecties in the **docs** folder
 
@@ -100,4 +100,3 @@ Please see [LICENSE.TXT](https://github.com/phorton1/Arduino-libraries-myIOT/blo
 
 
 **Next:** The [**Electronics**](electronics.md), schematics, and circuit boards used in the box ...
-
