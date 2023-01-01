@@ -10,9 +10,6 @@
 
 #if WITH_IR
 
-	#define TEST_IR   1
-
-
 	#define IR_FUDGE  50
 
 	int ambient_l = 0;
