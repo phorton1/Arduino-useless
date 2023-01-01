@@ -15,7 +15,12 @@ jitter and jump around. After quite a bit of wrangling with the issue, I finally
 just gave up and coded the program so that the servos are never running when the
 LEDs are changed, and vice-versa.
 
-## Required Arduino libraries
+## Installation/Building
+
+Use **git** or download a **zip** of this repository and place it's contents
+in an Arduino *sketch folder* called **useless**.
+
+You will also **require** the following libraries in your Arduino IDE environment
 
 - **[myDebug](https://github.com/phorton1/Arduino-libraries-myDebug)** -
 my arduino/teensy/esp32 debug output routines, installed by using **git** or manually installing from
@@ -23,7 +28,14 @@ the **[git_repository](https://github.com/phorton1/Arduino-libraries-myDebug)**
 - **VarSpeedServo** - installed via the Arduino library manager
 - **Adafruit_NeoPixel** - installed via the Arduino library manager
 
+Open the **useless.ino** sketch in the Arduino IDE, then compile and
+upload it to the **Arduino Nano**.
+
+
 ## Design
+
+There are many design details, but here I am only going to briefly describe
+the **behavioral** aspects of the design.
 
 - There are a set of **acts**.
 - The number of acts determines the length of a **pass**.
