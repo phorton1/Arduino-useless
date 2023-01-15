@@ -132,7 +132,7 @@ U 1 1 632CB83D
 P 1400 1700
 F 0 "J5" H 1550 1600 50  0000 C CNN
 F 1 "ARM" H 1650 1700 50  0000 R CNN
-F 2 "Connector_PinHeader_2.54mm:PinHeader_1x03_P2.54mm_Vertical" H 1400 1700 50  0001 C CNN
+F 2 "0_my_footprints:myPinHeader_1x03" H 1400 1700 50  0001 C CNN
 F 3 "~" H 1400 1700 50  0001 C CNN
 	1    1400 1700
 	-1   0    0    1   
@@ -156,7 +156,7 @@ U 1 1 632D7059
 P 1400 2100
 F 0 "J6" H 1550 2000 50  0000 C CNN
 F 1 "LID" H 1650 2100 50  0000 R CNN
-F 2 "Connector_PinHeader_2.54mm:PinHeader_1x03_P2.54mm_Vertical" H 1400 2100 50  0001 C CNN
+F 2 "0_my_footprints:myPinHeader_1x03" H 1400 2100 50  0001 C CNN
 F 3 "~" H 1400 2100 50  0001 C CNN
 	1    1400 2100
 	-1   0    0    1   
@@ -180,7 +180,7 @@ U 1 1 632D750C
 P 1400 2500
 F 0 "J7" H 1550 2400 50  0000 C CNN
 F 1 "WHEEL_1" H 1850 2500 50  0000 R CNN
-F 2 "Connector_PinHeader_2.54mm:PinHeader_1x03_P2.54mm_Vertical" H 1400 2500 50  0001 C CNN
+F 2 "0_my_footprints:myPinHeader_1x03" H 1400 2500 50  0001 C CNN
 F 3 "~" H 1400 2500 50  0001 C CNN
 	1    1400 2500
 	-1   0    0    1   
@@ -204,7 +204,7 @@ U 1 1 632DCC73
 P 1400 2900
 F 0 "J8" H 1550 2800 50  0000 C CNN
 F 1 "WHEEL_2" H 1850 2900 50  0000 R CNN
-F 2 "Connector_PinHeader_2.54mm:PinHeader_1x03_P2.54mm_Vertical" H 1400 2900 50  0001 C CNN
+F 2 "0_my_footprints:myPinHeader_1x03" H 1400 2900 50  0001 C CNN
 F 3 "~" H 1400 2900 50  0001 C CNN
 	1    1400 2900
 	-1   0    0    1   
@@ -228,7 +228,7 @@ U 1 1 632DD10C
 P 1400 3300
 F 0 "J9" H 1550 3200 50  0000 C CNN
 F 1 "WHEEL_3" H 1850 3300 50  0000 R CNN
-F 2 "Connector_PinHeader_2.54mm:PinHeader_1x03_P2.54mm_Vertical" H 1400 3300 50  0001 C CNN
+F 2 "0_my_footprints:myPinHeader_1x03" H 1400 3300 50  0001 C CNN
 F 3 "~" H 1400 3300 50  0001 C CNN
 	1    1400 3300
 	-1   0    0    1   
@@ -252,7 +252,7 @@ U 1 1 632DDF40
 P 1400 3700
 F 0 "J10" H 1550 3600 50  0000 C CNN
 F 1 "WHEEL_4" H 1850 3700 50  0000 R CNN
-F 2 "Connector_PinHeader_2.54mm:PinHeader_1x03_P2.54mm_Vertical" H 1400 3700 50  0001 C CNN
+F 2 "0_my_footprints:myPinHeader_1x03" H 1400 3700 50  0001 C CNN
 F 3 "~" H 1400 3700 50  0001 C CNN
 	1    1400 3700
 	-1   0    0    1   
@@ -276,7 +276,7 @@ U 1 1 632DE268
 P 1400 4100
 F 0 "J11" H 1550 4000 50  0000 C CNN
 F 1 "FLAG" H 1700 4100 50  0000 R CNN
-F 2 "Connector_PinHeader_2.54mm:PinHeader_1x03_P2.54mm_Vertical" H 1400 4100 50  0001 C CNN
+F 2 "0_my_footprints:myPinHeader_1x03" H 1400 4100 50  0001 C CNN
 F 3 "~" H 1400 4100 50  0001 C CNN
 	1    1400 4100
 	-1   0    0    1   

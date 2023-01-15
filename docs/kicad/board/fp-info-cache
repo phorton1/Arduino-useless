@@ -1,4 +1,18 @@
-18767951068512459
+18786361867360047
+0_my_footprints
+CP_my10uf
+CP, Radial series, Radial, pin pitch=2.00mm, , diameter=4mm, Electrolytic Capacitor
+CP Radial series Radial pin pitch 2.00mm  diameter 4mm Electrolytic Capacitor
+0
+2
+2
+0_my_footprints
+CP_my100uf
+CP, Radial series, Radial, pin pitch=3.80mm, , diameter=8mm, Electrolytic Capacitor
+CP Radial series Radial pin pitch 3.80mm  diameter 8mm Electrolytic Capacitor
+0
+2
+2
 0_my_footprints
 myArduinoNano
 
@@ -125,6 +139,62 @@ mounting hole 3.2mm no annular m3
 0
 0
 0
+0_my_footprints
+myPinHeader_1x01
+Through hole straight pin header, 1x01, 2.54mm pitch, single row
+Through hole pin header THT 1x01 2.54mm single row
+0
+1
+1
+0_my_footprints
+myPinHeader_1x02
+Through hole straight pin header, 1x02, 2.54mm pitch, single row
+Through hole pin header THT 1x02 2.54mm single row
+0
+2
+2
+0_my_footprints
+myPinHeader_1x03
+Through hole straight pin header, 1x03, 2.54mm pitch, single row
+Through hole pin header THT 1x03 2.54mm single row
+0
+3
+3
+0_my_footprints
+myPinHeader_1x04
+Through hole straight pin header, 1x04, 2.54mm pitch, single row
+Through hole pin header THT 1x04 2.54mm single row
+0
+4
+4
+0_my_footprints
+myPinHeader_1x05
+Through hole straight pin header, 1x05, 2.54mm pitch, single row
+Through hole pin header THT 1x05 2.54mm single row
+0
+5
+5
+0_my_footprints
+myPinHeader_1x06
+Through hole straight pin header, 1x06, 2.54mm pitch, single row
+Through hole pin header THT 1x06 2.54mm single row
+0
+6
+6
+0_my_footprints
+myPinHeader_1x07
+Through hole straight pin header, 1x07, 2.54mm pitch, single row
+Through hole pin header THT 1x07 2.54mm single row
+0
+7
+7
+0_my_footprints
+myPinHeader_1x08
+Through hole straight pin header, 1x08, 2.54mm pitch, single row
+Through hole pin header THT 1x08 2.54mm single row
+0
+8
+8
 0_my_footprints
 myPinSocket_1x01
 8.4mm tall socket strip, 1x01, 2.54mm pitch, from kicad_pinsockets.pm
@@ -341,6 +411,13 @@ https://cdn-shop.adafruit.com/datasheets/WS2812B.pdf
 LED RGB NeoPixel
 0
 4
+4
+0_my_footprints
+terminalBlock_4x9.5_withScrewHoles
+
+
+0
+12
 4
 Battery
 BatteryHolder_Bulgin_BX0036_1xC
