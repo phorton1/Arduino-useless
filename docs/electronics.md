@@ -65,7 +65,7 @@ After collecting the parts together ...
 
 ![circuit_parts.jpg](images/circuit_parts.jpg)
 
-I soldered everything (wires, connectors, and buttons) to the board:
+I soldered everything (wires, connectors, etc) to the board:
 
 ![circuit_board_top.jpg](images/circuit_board_top.jpg)
 
@@ -85,4 +85,3 @@ show through to the user for some kind of a display.
 ![soldered_leds.jpg](images/soldered_leds.jpg)
 
 **Next:** Constructing the [**Wood**](wood.md) top and bottom of the box ...
-

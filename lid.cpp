@@ -3,15 +3,10 @@
 #include "lid.h"
 #include <VarSpeedServo.h>
 
-#if USELESS_VERSION == 1
-	#define LID_PEEK_DEGREES  17
-	#define LID_SMALL_DEGREES 26
-	#define LID_OPEN_DEGREES  40
-#else
-	#define LID_PEEK_DEGREES  22
-	#define LID_SMALL_DEGREES 35
-	#define LID_OPEN_DEGREES  45
-#endif
+
+#define LID_PEEK_DEGREES  22
+#define LID_SMALL_DEGREES 35
+#define LID_OPEN_DEGREES  45
 
 
 VarSpeedServo lid_servo;
@@ -35,11 +30,7 @@ bool lid::busy()
 		// speed did not seem to help ?!?!? it is as if the servo
 		// moves slower than the library !?!?
 
-		#if USELESS_VERSION == 1
-			delay(20);
-		#else
-			delay(50);
-		#endif
+		delay(50);
 		lid_servo.detach();
 	}
 	return lid_servo.attached();

@@ -29,7 +29,6 @@ I decided on the following basic set of requirements for my useless box
 - **mobility** - it will have motors and semi-hidden wheels so it can spin, move left and right, etc
 - **sensors** - it will have sensors, probably infrared, to detect when a human tries to touch it
 - **leds** - it will have a string of WD2812b leds that will light up the interior for effect and probably some on the top to show the user
-- **buttons** - it will have a couple of toothpick accessible buttons to allow the user to configure it to some degree
 - **on-off switch** - it will have an on/off switch to the power supply
 - **batteries** - it will use rechargable 18650 Lithium batteries, because I have a bunch of those, and pre-made plastic holders for them
 - **nicely constructed** - it will look nice, like a bit of a wood working effort

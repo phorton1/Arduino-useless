@@ -67,23 +67,12 @@
 #define WHEELS_CCW		0x8000
 	// these are given a duration in milliseconds
 	// where 150 is a burst and 2 seconds a rotation
-#define WHEELS_HOME		0x0800
-	// return to heading from the start of the act
-
 
 // wheel times
 
-#if USELESS_VERSION == 1
-	#define WHEEL_TIME  	3
-	#define ROTATE_TIME 	230
-	#define OBS_BURST  		12
-#else
-	// version 2 has no compass, rotate time determined heuristically
-
-	#define WHEEL_TIME  	3
-	#define ROTATE_TIME 	190
-	#define OBS_BURST  		12
-#endif
+#define WHEEL_TIME  	3
+#define ROTATE_TIME 	190
+#define OBS_BURST  		12
 
 
 void start_act();
@@ -93,7 +82,3 @@ void start_act();
 void process_act();
 	// called at frame rate - implements all behavior
 
-void set_move_mode(int mode);
-	// 0 = reset the interpreter (start new session)
-	// 1 = go to MOVE_MODE_1
-	// 2 = go to MOVE_MODE_2

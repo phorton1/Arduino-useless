@@ -11,19 +11,11 @@
 #define DEBUG_ACT  		0
 
 
-#if USELESS_VERSION == 1
-	#define IR_CUTOFF1		5
-	#define IR_CUTOFF2     15
-	#define IR_CUTOFF3	   25
-	#define IR_CUTOFF4     40
-	#define IR_CUTOFF5	   70
-#else
-	#define IR_CUTOFF1	   15
-	#define IR_CUTOFF2     30
-	#define IR_CUTOFF3	   60
-	#define IR_CUTOFF4     90
-	#define IR_CUTOFF5	   128
-#endif
+#define IR_CUTOFF1	   15
+#define IR_CUTOFF2     30
+#define IR_CUTOFF3	   60
+#define IR_CUTOFF4     90
+#define IR_CUTOFF5	   128
 
 
 
@@ -31,12 +23,6 @@
 // The "program" proceeds through passes, based on the number of defined acts,
 // increasing in random and more agressive behavior as it goes through the passes.
 //
-// Movements fall into three categories.  Small moves that can happen on a cluttered shelf
-// are included by default and is called MOVE_MODE_0. Slightly bigger movements require button
-// presses to set MOVE_MODE1, which includes upto ONE evasive step and other specific steps.
-// Full circles, more than one evasive step require higher MOVE_MODE_2.
-
-
 // Each step can be assigned a "minimum pass" that it takes effect in, so
 // for instance, we could have an act that has no wheel moves in PASS0 and PASS1, and
 // then starts having wheel moves in PASS2.
@@ -46,12 +32,6 @@
 // where the box moves to avoid the user.  ir_arm_mode begins in pass2, and evasion_mode
 // only begins at AGRESSION level 1 AFTER at least two other moves (jitters) have
 // happened (to prevent giving away the fact that the box can move)l
-//
-// Furthermore we can set an agression level (via a button), that defaults to zero,
-// and steps can also be limited to only operate at a given agression level.  For
-// instance, spinning the box requires a lot of space, and may not be appropriate
-// when the box is sitting on a cluttered shelf.  So we can say that apinning the
-// box only happens at AGRESSION 2.
 //
 // In addition each step has several items that can be individually randomized:
 //
@@ -69,24 +49,6 @@
 //
 //      after at least two 1st level moves have happened, evasion mode
 //      starts taking place if AG, and if AGRESSION is set to a certain
-//
-//
-
-
-#define TIMEOUT_SEESIONS   0
-	// if set to 1 the sessions will timeout.
-	// if 0, session can still be restarted via call (button)
-
-#define SESSION_TIMEOUT (2UL*60UL*1000UL)
-    // session times out after two minutes
-    //
-    // NOTE COMPILER ISSUE:
-    //
-    // I was getting weird behavior when I used (2*60*1000) .. without any compiler warnings.
-    // I switched to a "new bootloader" nano and started getting a warning about an integer
-    // overflow when using the above define.  It turns out that by default all constants on the
-    // right side of an expression are automatically 16 bits on Arduino and you MUST use the UL
-    // designation to get around it.
 
 #pragma pack 1
 
@@ -96,7 +58,6 @@ typedef struct
 {
 	uint8_t	step_type;
 	uint8_t min_pass;
-	uint8_t min_mode;
 
 	union {
 		struct {
@@ -143,83 +104,83 @@ typedef step_t *act_t;		// an act is an array of steps
 
 
 const step_t normal_medium[] PROGMEM = {
-	{ STEP_TYPE_MOVE,	0,0,	{.move=		{ARM_DOWN, 						0,0,0,	 		255,   0}}},
+	{ STEP_TYPE_MOVE,	0,	{.move=		{ARM_DOWN, 						0,0,0,	 		255,   0}}},
 	{ STEP_TYPE_RANDOM },
-	{ STEP_TYPE_MOVE,	0,0,	{.move=		{LID_OPEN, 						0,0,0,	 		 50,   0}}},
-	{ STEP_TYPE_MOVE,	0,0,	{.move=		{ARM_TURN_OFF,					0,0,0,	 		 50,   0}}},
-	{ STEP_TYPE_MOVE,	0,0,	{.move=		{ARM_DOWN, 						0,0,0,	 		 50,   0}}},
+	{ STEP_TYPE_MOVE,	0,	{.move=		{LID_OPEN, 						0,0,0,	 		 50,   0}}},
+	{ STEP_TYPE_MOVE,	0,	{.move=		{ARM_TURN_OFF,					0,0,0,	 		 50,   0}}},
+	{ STEP_TYPE_MOVE,	0,	{.move=		{ARM_DOWN, 						0,0,0,	 		 50,   0}}},
 	{ STEP_TYPE_RANDOM },
-	{ STEP_TYPE_MOVE,	0,0,	{.move=		{LID_CLOSED, 					0,0,0,	 		 50,   0}}},
+	{ STEP_TYPE_MOVE,	0,	{.move=		{LID_CLOSED, 					0,0,0,	 		 50,   0}}},
 	{ 0 }
 };
 
 
 const step_t quick_poised[] PROGMEM = {
-	{ STEP_TYPE_MOVE,	0,0,	{.move=		{ARM_DOWN, 						0,0,0, 			255,   0}}},
-	{ STEP_TYPE_PIXELS, 0,0,	{.pixels=	{BLUE, BLUE}}},
-	{ STEP_TYPE_MOVE,	0,0,	{.move=		{LID_OPEN, 		  				0,0,0,			255,   0}}},
-	{ STEP_TYPE_PIXELS, 0,0,	{.pixels=	{MAGENTA, MAGENTA}}},
-	{ STEP_TYPE_MOVE,	0,0,	{.move=		{ARM_POISED, 		 			60,50,120, 		255,   0}}},
+	{ STEP_TYPE_MOVE,	0,	{.move=		{ARM_DOWN, 						0,0,0, 			255,   0}}},
+	{ STEP_TYPE_PIXELS, 0,	{.pixels=	{BLUE, BLUE}}},
+	{ STEP_TYPE_MOVE,	0,	{.move=		{LID_OPEN, 		  				0,0,0,			255,   0}}},
+	{ STEP_TYPE_PIXELS, 0,	{.pixels=	{MAGENTA, MAGENTA}}},
+	{ STEP_TYPE_MOVE,	0,	{.move=		{ARM_POISED, 		 			60,50,120, 		255,   0}}},
 	{ STEP_TYPE_RANDOM },
-	{ STEP_TYPE_MOVE,	0,0,	{.move=		{ARM_TURN_OFF,					120,100,150,	100,   0}}},
-	{ STEP_TYPE_PIXELS, 0,0,	{.pixels=	{GREEN, GREEN}}},
-	{ STEP_TYPE_MOVE,	0,0,	{.move=		{ARM_POISED,					0,0,0, 		 	 20,   0}}},
-	{ STEP_TYPE_PIXELS, 0,0,	{.pixels=	{CYAN, CYAN}}},
-	{ STEP_TYPE_MOVE,	0,0,	{.move=		{ARM_DOWN, 						100,100,150, 	255,   0}}},
-	{ STEP_TYPE_PIXELS, 0,0,	{.pixels=	{BLACK, BLACK}}},
-	{ STEP_TYPE_MOVE,	0,0,	{.move=		{LID_CLOSED, 			    	0,0,0,  		 50,   0}}},
+	{ STEP_TYPE_MOVE,	0,	{.move=		{ARM_TURN_OFF,					120,100,150,	100,   0}}},
+	{ STEP_TYPE_PIXELS, 0,	{.pixels=	{GREEN, GREEN}}},
+	{ STEP_TYPE_MOVE,	0,	{.move=		{ARM_POISED,					0,0,0, 		 	 20,   0}}},
+	{ STEP_TYPE_PIXELS, 0,	{.pixels=	{CYAN, CYAN}}},
+	{ STEP_TYPE_MOVE,	0,	{.move=		{ARM_DOWN, 						100,100,150, 	255,   0}}},
+	{ STEP_TYPE_PIXELS, 0,	{.pixels=	{BLACK, BLACK}}},
+	{ STEP_TYPE_MOVE,	0,	{.move=		{LID_CLOSED, 			    	0,0,0,  		 50,   0}}},
 	{ 0 }
 };
 
 
 
 const step_t fastest[] PROGMEM = {
-	{ STEP_TYPE_PIXELS, 0,0,	{.pixels=	{GREEN, GREEN}}},
-	{ STEP_TYPE_MOVE,	0,0,	{.move=		{ARM_TURN_OFF,					0,0,0,			255,   0}}},
-	{ STEP_TYPE_MOVE,	0,0,	{.move=		{ARM_DOWN | LID_CLOSED, 		0,0,0,			255,   0}}},
-	{ STEP_TYPE_PIXELS, 0,0,	{.pixels=	{BLACK, BLACK}}},
+	{ STEP_TYPE_PIXELS, 0,	{.pixels=	{GREEN, GREEN}}},
+	{ STEP_TYPE_MOVE,	0,	{.move=		{ARM_TURN_OFF,					0,0,0,			255,   0}}},
+	{ STEP_TYPE_MOVE,	0,	{.move=		{ARM_DOWN | LID_CLOSED, 		0,0,0,			255,   0}}},
+	{ STEP_TYPE_PIXELS, 0,	{.pixels=	{BLACK, BLACK}}},
 	{ 0 }
 };
 
 const step_t quick_small_delayed[] PROGMEM = {
-	{ STEP_TYPE_PIXELS, 0,0,	{.pixels=	{RED, RED}}},
-	{ STEP_TYPE_MOVE,	0,0,	{.move=		{LID_SMALL,						100,20,100, 	 30,   0}}},
+	{ STEP_TYPE_PIXELS, 0,	{.pixels=	{RED, RED}}},
+	{ STEP_TYPE_MOVE,	0,	{.move=		{LID_SMALL,						100,20,100, 	 30,   0}}},
 	{ STEP_TYPE_RANDOM },
-	{ STEP_TYPE_MOVE,	0,0,	{.move=		{ARM_TURN_OFF,					150,50,150, 	255,   0}}},
-	{ STEP_TYPE_PIXELS, 0,0,	{.pixels=	{BLUE, BLUE}}},
-	{ STEP_TYPE_MOVE,	0,0,	{.move=		{ARM_DOWN, 						0,0,0,			255,   0}}},
-	{ STEP_TYPE_MOVE,	0,0,	{.move=		{LID_CLOSED, 					100,0,100,  	 40,   0}}},
-	{ STEP_TYPE_PIXELS, 0,0,	{.pixels=	{BLACK, BLACK}}},
+	{ STEP_TYPE_MOVE,	0,	{.move=		{ARM_TURN_OFF,					150,50,150, 	255,   0}}},
+	{ STEP_TYPE_PIXELS, 0,	{.pixels=	{BLUE, BLUE}}},
+	{ STEP_TYPE_MOVE,	0,	{.move=		{ARM_DOWN, 						0,0,0,			255,   0}}},
+	{ STEP_TYPE_MOVE,	0,	{.move=		{LID_CLOSED, 					100,0,100,  	 40,   0}}},
+	{ STEP_TYPE_PIXELS, 0,	{.pixels=	{BLACK, BLACK}}},
 	{ 0 }
 };
 
 const step_t fastest_no_ir[] PROGMEM = {
-	{ STEP_TYPE_PIXELS, 0,0,	{.pixels=	{RED, RED}}},
-	{ STEP_TYPE_MOVE,	0,0,	{.move=		{ARM_TURN_OFF | WAIT_NO_IR,		0,0,0,			255,   0}}},
-	{ STEP_TYPE_PIXELS, 0,0,	{.pixels=	{GREEN, GREEN}}},
-	{ STEP_TYPE_MOVE,	0,0,	{.move=		{ARM_DOWN | LID_CLOSED, 		0,0,0,			255,   0}}},
-	{ STEP_TYPE_PIXELS, 0,0,	{.pixels=	{BLACK, BLACK}}},
+	{ STEP_TYPE_PIXELS, 0,	{.pixels=	{RED, RED}}},
+	{ STEP_TYPE_MOVE,	0,	{.move=		{ARM_TURN_OFF | WAIT_NO_IR,		0,0,0,			255,   0}}},
+	{ STEP_TYPE_PIXELS, 0,	{.pixels=	{GREEN, GREEN}}},
+	{ STEP_TYPE_MOVE,	0,	{.move=		{ARM_DOWN | LID_CLOSED, 		0,0,0,			255,   0}}},
+	{ STEP_TYPE_PIXELS, 0,	{.pixels=	{BLACK, BLACK}}},
 	{ 0 }
 };
 
 
 
 const step_t arm_repeat[] PROGMEM = {
-	{ STEP_TYPE_PIXELS, 0,0,	{.pixels=	{MAGENTA, MAGENTA}}},
-	{ STEP_TYPE_MOVE,	0,0,	{.move=		{LID_OPEN, 						100,0,100, 		80,    0}}},
+	{ STEP_TYPE_PIXELS, 0,	{.pixels=	{MAGENTA, MAGENTA}}},
+	{ STEP_TYPE_MOVE,	0,	{.move=		{LID_OPEN, 						100,0,100, 		80,    0}}},
 	{ STEP_TYPE_RANDOM },
-	{ STEP_TYPE_PIXELS, 0,0,	{.pixels=	{RED, RED}}},
-	{ STEP_TYPE_MOVE,	0,0,	{.move=		{ARM_UP, 					  	0,0,0,			255,   0}}},
-	{ STEP_TYPE_PIXELS, 0,0,	{.pixels=	{MAGENTA, MAGENTA}}},
-	{ STEP_TYPE_MOVE,	0,0,	{.move=		{ARM_POISED,				    0,0,0,			255,   0}}},
-	{ STEP_TYPE_PIXELS, 0,0,	{.pixels=	{RED, RED}}},
-	{ STEP_TYPE_LOOP,   0,0,	{.loop=		{5,4,2,6}}},
-	{ STEP_TYPE_PIXELS, 0,0,	{.pixels=	{GREEN, GREEN}}},
-	{ STEP_TYPE_MOVE,	0,0,	{.move=		{ARM_TURN_OFF,					100,50,150,		255,   0}}},
-	{ STEP_TYPE_PIXELS, 0,0,	{.pixels=	{BLUE, BLUE}}},
-	{ STEP_TYPE_MOVE,	0,0,	{.move=		{ARM_DOWN, 						0,0,0,			255,   0}}},
-	{ STEP_TYPE_MOVE,	0,0,	{.move=		{LID_CLOSED, 					0,0,0,  		 50,   0}}},
-	{ STEP_TYPE_PIXELS, 0,0,	{.pixels=	{BLACK, BLACK}}},
+	{ STEP_TYPE_PIXELS, 0,	{.pixels=	{RED, RED}}},
+	{ STEP_TYPE_MOVE,	0,	{.move=		{ARM_UP, 					  	0,0,0,			255,   0}}},
+	{ STEP_TYPE_PIXELS, 0,	{.pixels=	{MAGENTA, MAGENTA}}},
+	{ STEP_TYPE_MOVE,	0,	{.move=		{ARM_POISED,				    0,0,0,			255,   0}}},
+	{ STEP_TYPE_PIXELS, 0,	{.pixels=	{RED, RED}}},
+	{ STEP_TYPE_LOOP,   0,	{.loop=		{5,4,2,6}}},
+	{ STEP_TYPE_PIXELS, 0,	{.pixels=	{GREEN, GREEN}}},
+	{ STEP_TYPE_MOVE,	0,	{.move=		{ARM_TURN_OFF,					100,50,150,		255,   0}}},
+	{ STEP_TYPE_PIXELS, 0,	{.pixels=	{BLUE, BLUE}}},
+	{ STEP_TYPE_MOVE,	0,	{.move=		{ARM_DOWN, 						0,0,0,			255,   0}}},
+	{ STEP_TYPE_MOVE,	0,	{.move=		{LID_CLOSED, 					0,0,0,  		 50,   0}}},
+	{ STEP_TYPE_PIXELS, 0,	{.pixels=	{BLACK, BLACK}}},
 	{ 0 }
 };
 
@@ -228,26 +189,26 @@ const step_t arm_repeat[] PROGMEM = {
 // see flapper specific servo tuning in lid.cpp ?!?
 
 const step_t flapper[] PROGMEM = {
-	{ STEP_TYPE_MOVE,	0,0,	{.move=		{ARM_DOWN | LID_CLOSED,			  0,0,0,		255,   0}}},
-	{ STEP_TYPE_PIXELS, 0,0,	{.pixels=	{GREEN, RED}}},
-	{ STEP_TYPE_MOVE,	0,0,	{.move=		{LID_SMALL, 					  0,0,0,		192,   0}}},
-	{ STEP_TYPE_PIXELS, 0,0,	{.pixels=	{GREEN, RED}}},
-	{ STEP_TYPE_MOVE,	0,0,	{.move=		{LID_CLOSED, 					  0,0,0,		255,   0}}},
-	{ STEP_TYPE_PIXELS, 0,0,	{.pixels=	{RED, GREEN}}},
-	{ STEP_TYPE_LOOP,   0,0,	{.loop=		{5,3,0,4}}},
-	{ STEP_TYPE_PIXELS, 0,0,	{.pixels=	{BLUE, BLUE}}},
-	{ STEP_TYPE_MOVE,	0,0,	{.move=		{LID_SMALL,						  0,0,0,		192,   0}}},
-	{ STEP_TYPE_PIXELS, 0,0,	{.pixels=	{CYAN, CYAN}}},
+	{ STEP_TYPE_MOVE,	0,	{.move=		{ARM_DOWN | LID_CLOSED,			  0,0,0,		255,   0}}},
+	{ STEP_TYPE_PIXELS, 0,	{.pixels=	{GREEN, RED}}},
+	{ STEP_TYPE_MOVE,	0,	{.move=		{LID_SMALL, 					  0,0,0,		192,   0}}},
+	{ STEP_TYPE_PIXELS, 0,	{.pixels=	{GREEN, RED}}},
+	{ STEP_TYPE_MOVE,	0,	{.move=		{LID_CLOSED, 					  0,0,0,		255,   0}}},
+	{ STEP_TYPE_PIXELS, 0,	{.pixels=	{RED, GREEN}}},
+	{ STEP_TYPE_LOOP,   0,	{.loop=		{5,3,0,4}}},
+	{ STEP_TYPE_PIXELS, 0,	{.pixels=	{BLUE, BLUE}}},
+	{ STEP_TYPE_MOVE,	0,	{.move=		{LID_SMALL,						  0,0,0,		192,   0}}},
+	{ STEP_TYPE_PIXELS, 0,	{.pixels=	{CYAN, CYAN}}},
 	{ STEP_TYPE_RANDOM },
-	{ STEP_TYPE_MOVE,	0,0,	{.move=		{ARM_TURN_OFF,					  0,0,0,		255,   0}}},
-	{ STEP_TYPE_MOVE,	0,0,	{.move=		{ARM_DOWN | LID_CLOSED, 		  0,0,0,		255,   0}}},
-	{ STEP_TYPE_PIXELS, 0,0,	{.pixels=	{GREEN, RED}}},
-	{ STEP_TYPE_MOVE,	0,0,	{.move=		{LID_SMALL, 					  0,0,0,		192,   0}}},
-	{ STEP_TYPE_PIXELS, 0,0,	{.pixels=	{GREEN, RED}}},
-	{ STEP_TYPE_MOVE,	0,0,	{.move=		{LID_CLOSED, 					  0,0,0,		255,   0}}},
-	{ STEP_TYPE_PIXELS, 0,0,	{.pixels=	{RED, GREEN}}},
-	{ STEP_TYPE_LOOP,   0,0,	{.loop=		{0,0,0,4}}},
-	{ STEP_TYPE_PIXELS, 0,0,	{.pixels=	{BLACK, BLACK}}},
+	{ STEP_TYPE_MOVE,	0,	{.move=		{ARM_TURN_OFF,					  0,0,0,		255,   0}}},
+	{ STEP_TYPE_MOVE,	0,	{.move=		{ARM_DOWN | LID_CLOSED, 		  0,0,0,		255,   0}}},
+	{ STEP_TYPE_PIXELS, 0,	{.pixels=	{GREEN, RED}}},
+	{ STEP_TYPE_MOVE,	0,	{.move=		{LID_SMALL, 					  0,0,0,		192,   0}}},
+	{ STEP_TYPE_PIXELS, 0,	{.pixels=	{GREEN, RED}}},
+	{ STEP_TYPE_MOVE,	0,	{.move=		{LID_CLOSED, 					  0,0,0,		255,   0}}},
+	{ STEP_TYPE_PIXELS, 0,	{.pixels=	{RED, GREEN}}},
+	{ STEP_TYPE_LOOP,   0,	{.loop=		{0,0,0,4}}},
+	{ STEP_TYPE_PIXELS, 0,	{.pixels=	{BLACK, BLACK}}},
 	{ 0 }
 };
 
@@ -262,68 +223,59 @@ const step_t flapper[] PROGMEM = {
 // the loop counter.
 
 
-#define MP2 2
-#define MP3 3
-
 const step_t random_rotate_cw[] PROGMEM = {
-	{ STEP_TYPE_PIXELS, MP2,1,	{.pixels=	{YELLOW, YELLOW}}},
-	{ STEP_TYPE_MOVE,	MP2,1,	{.move=		{WHEELS_CW, 		  			0,0,0,	 	  	 0,    ROTATE_TIME}}},
-	{ STEP_TYPE_PIXELS, MP2,1,	{.pixels=	{GREEN, GREEN}}},
-	{ STEP_TYPE_MOVE,	MP2,2,	{.move=		{WHEELS_HOME,					0,0,0,	 	  	 0,    0}}},
+	{ STEP_TYPE_PIXELS, 2,	{.pixels=	{YELLOW, YELLOW}}},
+	{ STEP_TYPE_MOVE,	2,	{.move=		{WHEELS_CW, 		  			0,0,0,	 	  	 0,    ROTATE_TIME}}},
+	{ STEP_TYPE_PIXELS, 2,	{.pixels=	{GREEN, GREEN}}},
 	{0},
 };
 
 const step_t random_rotate_ccw[] PROGMEM = {
-	{ STEP_TYPE_PIXELS, MP2,1,	{.pixels=	{RED, RED}}},
-	{ STEP_TYPE_MOVE,	MP2,1,	{.move=		{WHEELS_CCW, 		  			0,0,0,	 	  	 0,    ROTATE_TIME}}},
-	{ STEP_TYPE_PIXELS, MP2,1,	{.pixels=	{GREEN, GREEN}}},
-	{ STEP_TYPE_MOVE,	MP2,2,	{.move=		{WHEELS_HOME,					0,0,0,	 	  	 0,    0}}},
+	{ STEP_TYPE_PIXELS, 2,	{.pixels=	{RED, RED}}},
+	{ STEP_TYPE_MOVE,	2,	{.move=		{WHEELS_CCW, 		  			0,0,0,	 	  	 0,    ROTATE_TIME}}},
+	{ STEP_TYPE_PIXELS, 2,	{.pixels=	{GREEN, GREEN}}},
 	{0},
 };
 
 const step_t back_and_forth[] PROGMEM = {
-	{ STEP_TYPE_PIXELS, MP2,1,	{.pixels=	{MAGENTA, MAGENTA}}},
-	{ STEP_TYPE_MOVE,	MP2,1,	{.move=		{WHEELS_CW, 		  			0,0,0,	 	  	 0,    40}}},
-	{ STEP_TYPE_PIXELS, MP2,1,	{.pixels=	{RED, RED}}},
-	{ STEP_TYPE_MOVE,	MP2,1,	{.move=		{WHEELS_CCW, 		  			0,0,0,	 	  	 0,    80}}},
-	{ STEP_TYPE_PIXELS, MP2,1,	{.pixels=	{BLUE, BLUE}}},
-	{ STEP_TYPE_MOVE,	MP2,1,	{.move=		{WHEELS_CW, 		  			0,0,0,	 	  	 0,    39}}},
-	{ STEP_TYPE_PIXELS, MP2,1,	{.pixels=	{GREEN, GREEN}}},
-	{ STEP_TYPE_MOVE,	MP2,2,	{.move=		{WHEELS_HOME,					0,0,0,	 	  	 0,    0}}},
+	{ STEP_TYPE_PIXELS, 2,	{.pixels=	{MAGENTA, MAGENTA}}},
+	{ STEP_TYPE_MOVE,	2,	{.move=		{WHEELS_CW, 		  			0,0,0,	 	  	 0,    40}}},
+	{ STEP_TYPE_PIXELS, 2,	{.pixels=	{RED, RED}}},
+	{ STEP_TYPE_MOVE,	2,	{.move=		{WHEELS_CCW, 		  			0,0,0,	 	  	 0,    80}}},
+	{ STEP_TYPE_PIXELS, 2,	{.pixels=	{BLUE, BLUE}}},
+	{ STEP_TYPE_MOVE,	2,	{.move=		{WHEELS_CW, 		  			0,0,0,	 	  	 0,    39}}},
+	{ STEP_TYPE_PIXELS, 2,	{.pixels=	{GREEN, GREEN}}},
 	{0},
 };
 
 const step_t random_jiggle[] PROGMEM = {
-	{ STEP_TYPE_PIXELS, MP2,0,	{.pixels=	{MAGENTA, MAGENTA}}},
-	{ STEP_TYPE_MOVE,	MP2,0,	{.move=		{WHEELS_CCW, 		  			0,0,0,	 		  0,   WHEEL_TIME}}},
-	{ STEP_TYPE_PIXELS, MP2,0,	{.pixels=	{YELLOW,YELLOW}}},
-	{ STEP_TYPE_MOVE,	MP2,0,	{.move=		{WHEELS_CW,						0,0,0,	 		  0,   WHEEL_TIME}}},
-	{ STEP_TYPE_PIXELS, MP2,0,	{.pixels=	{MAGENTA, MAGENTA}}},
-    { STEP_TYPE_LOOP,	MP2,0,	{.loop=		{5,2,3,7}}},
-	{ STEP_TYPE_MOVE,	MP2,2,	{.move=		{WHEELS_HOME,					0,0,0,	 	  	 0,    0}}},
+	{ STEP_TYPE_PIXELS, 2,	{.pixels=	{MAGENTA, MAGENTA}}},
+	{ STEP_TYPE_MOVE,	2,	{.move=		{WHEELS_CCW, 		  			0,0,0,	 		  0,   WHEEL_TIME}}},
+	{ STEP_TYPE_PIXELS, 2,	{.pixels=	{YELLOW,YELLOW}}},
+	{ STEP_TYPE_MOVE,	2,	{.move=		{WHEELS_CW,						0,0,0,	 		  0,   WHEEL_TIME}}},
+	{ STEP_TYPE_PIXELS, 2,	{.pixels=	{MAGENTA, MAGENTA}}},
+    { STEP_TYPE_LOOP,	2,	{.loop=		{5,2,3,7}}},
 	{0},
 };
 
 const step_t random_left_right[] PROGMEM = {
-	{ STEP_TYPE_PIXELS, MP2,0,	{.pixels=	{MAGENTA, MAGENTA}}},
-	{ STEP_TYPE_MOVE,	MP2,0,	{.move=		{WHEELS_LEFT, 		  			0,0,0,	 		  0,   WHEEL_TIME}}},
-	{ STEP_TYPE_PIXELS, MP2,0,	{.pixels=	{BLUE,BLUE}}},
-	{ STEP_TYPE_MOVE,	MP2,0,	{.move=		{WHEELS_RIGHT,					0,0,0,	 		  0,   WHEEL_TIME+1}}},
-	{ STEP_TYPE_PIXELS, MP2,0,	{.pixels=	{MAGENTA, MAGENTA}}},
-    { STEP_TYPE_LOOP,	MP2,0,	{.loop=		{5,2,3,7}}},
-	{ STEP_TYPE_MOVE,	MP2,2,	{.move=		{WHEELS_HOME,					0,0,0,	 	  	 0,    0}}},
+	{ STEP_TYPE_PIXELS, 2,	{.pixels=	{MAGENTA, MAGENTA}}},
+	{ STEP_TYPE_MOVE,	2,	{.move=		{WHEELS_LEFT, 		  			0,0,0,	 		  0,   WHEEL_TIME}}},
+	{ STEP_TYPE_PIXELS, 2,	{.pixels=	{BLUE,BLUE}}},
+	{ STEP_TYPE_MOVE,	2,	{.move=		{WHEELS_RIGHT,					0,0,0,	 		  0,   WHEEL_TIME+1}}},
+	{ STEP_TYPE_PIXELS, 2,	{.pixels=	{MAGENTA, MAGENTA}}},
+    { STEP_TYPE_LOOP,	2,	{.loop=		{5,2,3,7}}},
 	{0},
 };
 
 
 const step_t random_right_left[] PROGMEM = {
-	{ STEP_TYPE_PIXELS, MP2,0,	{.pixels=	{MAGENTA, MAGENTA}}},
-	{ STEP_TYPE_MOVE,	MP2,0,	{.move=		{WHEELS_RIGHT, 		  			0,0,0,	 		  0,   WHEEL_TIME}}},
-	{ STEP_TYPE_PIXELS, MP2,0,	{.pixels=	{CYAN,CYAN}}},
-	{ STEP_TYPE_MOVE,	MP2,0,	{.move=		{WHEELS_LEFT,					0,0,0,	 		  0,   WHEEL_TIME}}},
-	{ STEP_TYPE_PIXELS, MP2,0,	{.pixels=	{MAGENTA, MAGENTA}}},
-    { STEP_TYPE_LOOP,	MP2,0,	{.loop=		{5,2,3,7}}},
-	{ STEP_TYPE_MOVE,	MP2,2,	{.move=		{WHEELS_HOME,					0,0,0,	 	  	 0,    0}}},
+	{ STEP_TYPE_PIXELS, 2,	{.pixels=	{MAGENTA, MAGENTA}}},
+	{ STEP_TYPE_MOVE,	2,	{.move=		{WHEELS_RIGHT, 		  			0,0,0,	 		  0,   WHEEL_TIME}}},
+	{ STEP_TYPE_PIXELS, 2,	{.pixels=	{CYAN,CYAN}}},
+	{ STEP_TYPE_MOVE,	2,	{.move=		{WHEELS_LEFT,					0,0,0,	 		  0,   WHEEL_TIME}}},
+	{ STEP_TYPE_PIXELS, 2,	{.pixels=	{MAGENTA, MAGENTA}}},
+    { STEP_TYPE_LOOP,	2,	{.loop=		{5,2,3,7}}},
 	{0},
 };
 
@@ -371,9 +323,6 @@ act_t random_acts[] = {
 // global variables
 //--------------------------------------
 
-int move_mode = 1;
-	// normally 0, 1 for first cantina demo!
-uint32_t session_start;
 int session_act_count;
 int session_pass;
 
@@ -405,24 +354,6 @@ step_t *getStep(act_t act, int step_num)
 }
 
 
-// session control
-
-void set_move_mode(int mode)
-{
-	#if DEBUG_ACT
-		display(0,"set_move_mode(%d)",mode);
-	#endif
-
-	move_mode = mode;
-	session_act_count = 0;
-	cur_act_num = -1;
-	ir_mode = 0;
-	obs_mode = 0;
-	obs_pos = 0;
-    session_start = 0;
-	act_moved = 0;
-
-}
 
 
 //--------------------------------------
@@ -442,12 +373,6 @@ void start_act()
 	ir_mode = 0;
 	obs_mode = 0;
 	obs_pos = 0;
-
-
-	session_start = millis();
-		// update the session activity timer
-
-	wheels::setHeading();
 
 	// display the "light" as the act_count % 15 as left to right white user pixels
 
@@ -483,7 +408,7 @@ void start_act()
 	if (session_pass > 0)
 	{
 		cur_act_num = random(NUM_ACTS);
-		if (move_mode && act_moved > 2)
+		if (act_moved > 2)
 		{
 			if (random(4000) > 1000)
 				ir_mode = true;
@@ -528,19 +453,6 @@ void process_act()
 {
 	if (!in_act)
 	{
-        // if not in an act, and no activity for a while, time out the session
-
-        #if TIMEOUT_SEESIONS
-            if (session_start && (now > session_start + SESSION_TIMEOUT))
-            {
-				#if DEBUG_ACT
-					display(0,"Session Timeout",0);
-				#endif
-                set_move_mode(0);
-				return;
-            }
-        #endif
-
 		if (ir_mode)
 			handle_ir();
 		else if (obs_mode)
@@ -595,8 +507,7 @@ void process_act()
 				return;
 			}
 		}
-		else if (step->min_pass > session_pass ||
-				step->min_mode > move_mode)
+		else if (step->min_pass > session_pass)
 		{
 			display(0,"skipping act(%d) step(%d)",cur_act_num,cur_step_num);
 			cur_step_num++;
@@ -682,12 +593,6 @@ void process_act()
 			wheels::cw(dur);
 		else if (bits & WHEELS_CCW)
 			wheels::ccw(dur);
-		else if (bits & WHEELS_HOME)
-		{
-			delay(5);
-			wheels::home(true);
-		}
-
 	}
 	else if (step_type == STEP_TYPE_PIXELS)
 	{
@@ -737,7 +642,7 @@ void process_act()
 			act_t tact = random_acts[tnum];
 			step_t *tstep = getStep(tact,0);
 
-			if (tstep->min_pass <= session_pass && tstep->min_mode <= move_mode)
+			if (tstep->min_pass <= session_pass)
 			{
 				#if DEBUG_ACT
 					display(0,"RANDOM(%d) save(%d) pass=%d mode=%d",tnum,cur_step_num,tstep->min_pass,tstep->min_mode);
@@ -803,11 +708,6 @@ void handle_ir()
 	{
 		last_ir = ir;
 		ir_up_time = now;
-
-		// active IR counts as session activity
-
-		if (ir)
-			session_start = now;
 
 		switch (ir)
 		{

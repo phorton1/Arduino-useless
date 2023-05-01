@@ -3,7 +3,7 @@
 #include "wheels.h"
 #include <VarSpeedServo.h>
 #include <myDebug.h>
-#include "compass.h"
+
 
 #define DEBUG_WHEELS 	  0
 
@@ -24,7 +24,6 @@
 uint16_t 	wheels::m_heading;
 uint8_t 	wheels::m_duration;
 uint32_t 	wheels::m_start_time;
-uint32_t 	wheels::m_home_time;
 
 
 VarSpeedServo wheel_servo[4];
@@ -42,36 +41,11 @@ void wheels::init()
 }
 
 
-void wheels::setHeading()
-{
-	#if WITH_COMPASS
-		m_heading = read_compass_heading();
-		display(0,"set_heading(%d)",m_heading);
-	#endif
-}
-
-
 
 
 void wheels::update()
 {
 	uint32_t now = millis();
-
-	#if WITH_COMPASS
-		if (m_home_time)
-		{
-			if (now > m_home_time + 30)	// every millisecond
-			{
-				m_home_time = now;
-				home(false);
-				#if DEBUG_WHEELS
-					if (!m_home_time) display(0,"home stopped %d",read_compass_heading());
-				#endif
-			}
-			return;	// homing doesnt honor durations ...
-		}
-	#endif
-
 	if (m_start_time &&
 		m_duration != INFINITE_DURATION &&
 		now > m_start_time + m_duration * 10)
@@ -85,7 +59,7 @@ void wheels::update()
 
 bool wheels::busy()
 {
-	return m_home_time || attached();
+	return attached();
 }
 
 void wheels::stop()
@@ -148,125 +122,23 @@ void wheels::move(const int *dir, uint8_t duration, uint8_t speed, uint8_t rate)
 
 void wheels::left(uint8_t duration, uint8_t speed, uint8_t rate)
 {
-	#if USELESS_VERSION == 1
-		const int dir[] = {-1,-1,-1,1};
-	#else
-		const int dir[] = {1,-1,-1,1};
-	#endif
+	const int dir[] = {1,-1,-1,1};
 	move(dir,duration,speed,rate);
 }
 
 void wheels::right(uint8_t duration, uint8_t speed, uint8_t rate)
 {
-	#if USELESS_VERSION == 1
-		const int dir[] = {1,1,1,-1};
-	#else
-		const int dir[] = {-1,1,1,-1};
-	#endif
-
+	const int dir[] = {-1,1,1,-1};
 	move(dir,duration,speed,rate);
 }
 void wheels::cw(uint8_t duration, uint8_t speed, uint8_t rate)
 {
-	#if USELESS_VERSION == 1
-		const int dir[] = {-1,1,1,1};
-	#else
-		const int dir[] = {1,1,1,1};
-	#endif
-
+	const int dir[] = {1,1,1,1};
 	move(dir,duration,speed,rate);
 }
 void wheels::ccw(uint8_t duration, uint8_t speed, uint8_t rate)
 {
-	#if USELESS_VERSION == 1
-		const int dir[] = {1,-1,-1,-1};
-	#else
-		const int dir[] = {-1,-1,-1,-1};
-	#endif
+	const int dir[] = {-1,-1,-1,-1};
 	move(dir,duration,speed,rate);
 }
 
-
-
-void wheels::home(bool cold)
-{
-	#if WITH_COMPASS
-
-		int dir = 0;
-		int speed = 0;
-
-		static int last_dir = 0;
-		static int last_speed = 0;
-
-		if (cold)
-		{
-			#if DEBUG_WHEELS
-				display(0,"stopping",0);
-			#endif
-
-			delay(20);
-			stop();
-			delay(20);
-			for (int i=0; i<5; i++)
-			{
-				delay(10);
-				read_compass_heading();
-			}
-			last_dir = 0;
-			last_speed = 0;
-			m_home_time = 0;
-		}
-
-		int heading;
-		for (int i=0; i<5; i++)
-			heading = read_compass_heading();		// 0..359
-
-		#if DEBUG_WHEELS
-			display(0,"heading=%d",heading);
-		#endif
-
-		int diff = heading - m_heading;
-		if (diff >  180) diff -= 360;
-		if (diff < -180) diff += 360;
-		if (diff < -2)
-		{
-			speed = diff<-15?50:10;
-			dir = -1;
-		}
-		else if (diff > 2)
-		{
-			speed = diff>15?50:10;
-			dir = 1;
-		}
-
-		#if DEBUG_WHEELS
-			display(0,"home(%d) %d %d %d  speed=%d  dir=%d",cold,heading,m_heading,diff,speed,dir);
-		#endif
-
-		if (last_speed != speed ||
-			last_dir != dir)
-		{
-			stop();
-			delay(20);
-
-			last_speed = speed;
-			last_dir = dir;
-			if (dir == -1)
-			{
-				ccw(180, speed, 0);
-				m_home_time = millis();
-			}
-			else if (dir == 1)
-			{
-				cw(180, speed, 0);
-				m_home_time = millis();
-			}
-			else
-			{
-				stop();
-				m_home_time = 0;
-			}
-		}
-
-	#endif
-}
