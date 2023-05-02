@@ -8,6 +8,12 @@
 #include "wheels.h"
 #include "acts.h"
 
+// There is quite a bit of variabliity when building one of these.
+// I use the MG90S (metal gear) servo for the arm, and if possible, the lid.
+// I found that some MG90S's did not return to zero reliably, others did.
+// I had to tune the IRs, lid and arm angles, and act speeds to the build.
+// Also one nano did not program well with the serial cable.
+
 
 bool switch_state;
 uint32_t frame_time = 0;
@@ -15,6 +21,13 @@ uint32_t frame_time = 0;
 
 void setup()
 {
+    // JIC - added grounds to these, so I set them to input
+
+    pinMode(A4, INPUT);
+    pinMode(A5, INPUT);
+    pinMode(11, INPUT);
+    pinMode(12, INPUT);
+
     lid::init();
 
     Serial.begin(115200);
@@ -50,7 +63,7 @@ void setup()
 void loop()
 {
     uint32_t now = millis();
-    if (now > frame_time + 30)
+    if (now - frame_time > 50)
     {
         frame_time = now;
         bool sw = digitalRead(PIN_SWITCH) ? 0 : 1;
@@ -68,24 +81,25 @@ void loop()
                         pixels.setPixelColor(PIXEL_USER+i,0,0,0);
                     pixels.show();
                 #endif
-
-                #if WITH_COMPASS
-                    if (get_compass_mode())
-                        set_compass_mode(0);
-                #endif
             }
         }
-
         process_act();
-
-        #if WITH_IR
-        #if TEST_IR
-            int tl,tr;
-            read_ir(&tl,&tr);
-            display(0,"TEST_IR(%d,%d)",tl,tr);
-        #endif
-        #endif
     }
+
+
+    #if WITH_IR
+        #if TEST_IR
+            static uint32_t last_ir;
+            if (now - last_ir >= TEST_IR)
+            {
+                last_ir = now;
+                int tl,tr;
+                read_ir(&tl,&tr);
+                display(0,"TEST_IR(%d,%d)",tl,tr);
+            }
+        #endif
+    #endif
+
 
     #if TEST_MODE
         static int what = 0;
@@ -123,11 +137,9 @@ void loop()
                 display(0,"wheels::rotate_ccw(%d)",ROTATE_TIME);
                 wheels::ccw(ROTATE_TIME);
             }
-
         }
     #endif
 
     wheels::update();
         // wheel updating has it's own 1ms frame rate
-        // and works during compass_mode
 }

@@ -4,9 +4,9 @@
 #include <VarSpeedServo.h>
 
 
-#define LID_PEEK_DEGREES  22
-#define LID_SMALL_DEGREES 35
-#define LID_OPEN_DEGREES  45
+#define LID_PEEK_DEGREES  30
+#define LID_SMALL_DEGREES 40
+#define LID_OPEN_DEGREES  48
 
 
 VarSpeedServo lid_servo;

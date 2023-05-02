@@ -6,11 +6,11 @@
 
 #define DEBUG_ARM    0
 
-#define ARM_UP_DEGREES 30
-#define ARM_OUT_DEGREES 60
-#define ARM_POISED_DEGREES 82
-#define ARM_OFF_DEGREES 96
-#define ARM_TURN_OFF_DEGREES 98
+#define ARM_UP_DEGREES 50
+#define ARM_OUT_DEGREES 80
+#define ARM_POISED_DEGREES 98
+#define ARM_OFF_DEGREES 110
+#define ARM_TURN_OFF_DEGREES 115
 
 
 bool arm::m_wait_off;

@@ -38,10 +38,9 @@
 	// TEST_MODE can be set to one to allow you control, and
 	// verify the function and direction of the wheels via the
 	// Serial monitor.
-#define TEST_IR				0
-	// if TEST_IR is defined to one, the program will output
-	// the state of the IR sensors 30 times per second to
-	// the serial port for debugging purposes.
+#define TEST_IR				0	// 500
+	// if TEST_IR is not zero, this is the millisecond delay
+	// for output the IR sensor state for debugging.
 
 
 extern bool switch_state;

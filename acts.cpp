@@ -11,11 +11,11 @@
 #define DEBUG_ACT  		0
 
 
-#define IR_CUTOFF1	   15
-#define IR_CUTOFF2     30
-#define IR_CUTOFF3	   60
-#define IR_CUTOFF4     90
-#define IR_CUTOFF5	   128
+#define IR_CUTOFF1	   10
+#define IR_CUTOFF2     20
+#define IR_CUTOFF3	   50
+#define IR_CUTOFF4     80
+#define IR_CUTOFF5	   100
 
 
 
@@ -107,10 +107,10 @@ const step_t normal_medium[] PROGMEM = {
 	{ STEP_TYPE_MOVE,	0,	{.move=		{ARM_DOWN, 						0,0,0,	 		255,   0}}},
 	{ STEP_TYPE_RANDOM },
 	{ STEP_TYPE_MOVE,	0,	{.move=		{LID_OPEN, 						0,0,0,	 		 50,   0}}},
-	{ STEP_TYPE_MOVE,	0,	{.move=		{ARM_TURN_OFF,					0,0,0,	 		 50,   0}}},
+	{ STEP_TYPE_MOVE,	0,	{.move=		{ARM_TURN_OFF,					0,0,0,	 		 90,   0}}},
 	{ STEP_TYPE_MOVE,	0,	{.move=		{ARM_DOWN, 						0,0,0,	 		 50,   0}}},
 	{ STEP_TYPE_RANDOM },
-	{ STEP_TYPE_MOVE,	0,	{.move=		{LID_CLOSED, 					0,0,0,	 		 50,   0}}},
+	{ STEP_TYPE_MOVE,	0,	{.move=		{LID_CLOSED, 					0,0,0,	 		 128,   0}}},
 	{ 0 }
 };
 
@@ -128,7 +128,7 @@ const step_t quick_poised[] PROGMEM = {
 	{ STEP_TYPE_PIXELS, 0,	{.pixels=	{CYAN, CYAN}}},
 	{ STEP_TYPE_MOVE,	0,	{.move=		{ARM_DOWN, 						100,100,150, 	255,   0}}},
 	{ STEP_TYPE_PIXELS, 0,	{.pixels=	{BLACK, BLACK}}},
-	{ STEP_TYPE_MOVE,	0,	{.move=		{LID_CLOSED, 			    	0,0,0,  		 50,   0}}},
+	{ STEP_TYPE_MOVE,	0,	{.move=		{LID_CLOSED, 			    	0,0,0,  		 90,   0}}},
 	{ 0 }
 };
 
@@ -149,7 +149,7 @@ const step_t quick_small_delayed[] PROGMEM = {
 	{ STEP_TYPE_MOVE,	0,	{.move=		{ARM_TURN_OFF,					150,50,150, 	255,   0}}},
 	{ STEP_TYPE_PIXELS, 0,	{.pixels=	{BLUE, BLUE}}},
 	{ STEP_TYPE_MOVE,	0,	{.move=		{ARM_DOWN, 						0,0,0,			255,   0}}},
-	{ STEP_TYPE_MOVE,	0,	{.move=		{LID_CLOSED, 					100,0,100,  	 40,   0}}},
+	{ STEP_TYPE_MOVE,	0,	{.move=		{LID_CLOSED, 					100,0,100,  	 80,   0}}},
 	{ STEP_TYPE_PIXELS, 0,	{.pixels=	{BLACK, BLACK}}},
 	{ 0 }
 };
@@ -170,16 +170,16 @@ const step_t arm_repeat[] PROGMEM = {
 	{ STEP_TYPE_MOVE,	0,	{.move=		{LID_OPEN, 						100,0,100, 		80,    0}}},
 	{ STEP_TYPE_RANDOM },
 	{ STEP_TYPE_PIXELS, 0,	{.pixels=	{RED, RED}}},
-	{ STEP_TYPE_MOVE,	0,	{.move=		{ARM_UP, 					  	0,0,0,			255,   0}}},
+	{ STEP_TYPE_MOVE,	0,	{.move=		{ARM_UP, 					  	0,0,0,			180,   0}}},
 	{ STEP_TYPE_PIXELS, 0,	{.pixels=	{MAGENTA, MAGENTA}}},
-	{ STEP_TYPE_MOVE,	0,	{.move=		{ARM_POISED,				    0,0,0,			255,   0}}},
+	{ STEP_TYPE_MOVE,	0,	{.move=		{ARM_POISED,				    0,0,0,			180,   0}}},
 	{ STEP_TYPE_PIXELS, 0,	{.pixels=	{RED, RED}}},
 	{ STEP_TYPE_LOOP,   0,	{.loop=		{5,4,2,6}}},
 	{ STEP_TYPE_PIXELS, 0,	{.pixels=	{GREEN, GREEN}}},
 	{ STEP_TYPE_MOVE,	0,	{.move=		{ARM_TURN_OFF,					100,50,150,		255,   0}}},
 	{ STEP_TYPE_PIXELS, 0,	{.pixels=	{BLUE, BLUE}}},
 	{ STEP_TYPE_MOVE,	0,	{.move=		{ARM_DOWN, 						0,0,0,			255,   0}}},
-	{ STEP_TYPE_MOVE,	0,	{.move=		{LID_CLOSED, 					0,0,0,  		 50,   0}}},
+	{ STEP_TYPE_MOVE,	0,	{.move=		{LID_CLOSED, 					0,0,0,  		 80,   0}}},
 	{ STEP_TYPE_PIXELS, 0,	{.pixels=	{BLACK, BLACK}}},
 	{ 0 }
 };
@@ -197,7 +197,7 @@ const step_t flapper[] PROGMEM = {
 	{ STEP_TYPE_PIXELS, 0,	{.pixels=	{RED, GREEN}}},
 	{ STEP_TYPE_LOOP,   0,	{.loop=		{5,3,0,4}}},
 	{ STEP_TYPE_PIXELS, 0,	{.pixels=	{BLUE, BLUE}}},
-	{ STEP_TYPE_MOVE,	0,	{.move=		{LID_SMALL,						  0,0,0,		192,   0}}},
+	{ STEP_TYPE_MOVE,	0,	{.move=		{LID_SMALL,						  0,0,0,		255,   0}}},
 	{ STEP_TYPE_PIXELS, 0,	{.pixels=	{CYAN, CYAN}}},
 	{ STEP_TYPE_RANDOM },
 	{ STEP_TYPE_MOVE,	0,	{.move=		{ARM_TURN_OFF,					  0,0,0,		255,   0}}},
@@ -459,11 +459,16 @@ void process_act()
 		{
 			int16_t l = 0;
 			int16_t r = 0;
-			read_ir(&l,&r);
 
-			pixels.setPixelColor(PIXEL_USER+0,l,0,0);
-			pixels.setPixelColor(PIXEL_USER+4,r,0,0);
-			pixels.show();
+			#if WITH_IR
+				read_ir(&l,&r);
+			#endif
+
+			#if WITH_PIXELS
+				pixels.setPixelColor(PIXEL_USER+0,l,0,0);
+				pixels.setPixelColor(PIXEL_USER+4,r,0,0);
+				pixels.show();
+			#endif
 			handle_obs();
 		}
 		return;
@@ -645,7 +650,7 @@ void process_act()
 			if (tstep->min_pass <= session_pass)
 			{
 				#if DEBUG_ACT
-					display(0,"RANDOM(%d) save(%d) pass=%d mode=%d",tnum,cur_step_num,tstep->min_pass,tstep->min_mode);
+					display(0,"RANDOM(%d) save(%d) pass=%d",tnum,cur_step_num,tstep->min_pass);
 				#endif
 
 				save_act = cur_act;
@@ -666,9 +671,11 @@ void process_act()
 
 void setInsidePixels(uint8_t r, uint8_t g, uint8_t b)
 {
-	for (int i=0; i<PIXEL_USER; i++)
-		pixels.setPixelColor(i,r,g,b);
-	pixels.show();
+	#if WITH_PIXELS
+		for (int i=0; i<PIXEL_USER; i++)
+			pixels.setPixelColor(i,r,g,b);
+		pixels.show();
+	#endif
 }
 
 void handle_ir()
@@ -681,7 +688,9 @@ void handle_ir()
 
 	int16_t l = 0;
 	int16_t r = 0;
-	read_ir(&l,&r);
+	#if WITH_IR
+		read_ir(&l,&r);
+	#endif
 
 	// display(0,"ir %d %d",l,r);
 
@@ -761,7 +770,9 @@ void handle_obs()
 
 	int16_t l = 0;
 	int16_t r = 0;
-	read_ir(&l,&r);
+	#if WITH_IR
+		read_ir(&l,&r);
+	#endif
 
 	if (l<IR_CUTOFF1 && r < IR_CUTOFF1)
 		return;
