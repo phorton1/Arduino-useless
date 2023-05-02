@@ -71,7 +71,7 @@
 // wheel times
 
 #define WHEEL_TIME  	3
-#define ROTATE_TIME 	190
+#define ROTATE_TIME 	160
 #define OBS_BURST  		12
 
 

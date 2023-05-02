@@ -74,14 +74,14 @@ void loop()
             {
                start_act();
             }
-            else    // turn off lights
-            {
-                #if WITH_PIXELS
-                    for (int i=0; i<5; i++)
-                        pixels.setPixelColor(PIXEL_USER+i,0,0,0);
-                    pixels.show();
-                #endif
-            }
+            // else    // turn off lights - done at act endings
+            // {
+            //     #if WITH_PIXELS
+            //         for (int i=0; i<5; i++)
+            //             pixels.setPixelColor(PIXEL_USER+i,0,0,0);
+            //         pixels.show();
+            //     #endif
+            // }
         }
         process_act();
     }

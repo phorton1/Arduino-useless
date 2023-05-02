@@ -18,6 +18,10 @@
 #define IR_CUTOFF5	   100
 
 
+#define DELAY_AFTER_PIXELS_SHOW()		delay(50)
+	// dunno why it just up and fails sometimes.
+	// maybe it's the arduino?   Sometimes it fails (to put the arm down)
+	// and then a few seconds later does it ... sheesh.
 
 
 // The "program" proceeds through passes, based on the number of defined acts,
@@ -399,6 +403,7 @@ void start_act()
 			}
 		}
 		pixels.show();
+		DELAY_AFTER_PIXELS_SHOW();
 	#endif
 
 	session_pass = session_act_count / NUM_ACTS;
@@ -468,6 +473,7 @@ void process_act()
 				pixels.setPixelColor(PIXEL_USER+0,l,0,0);
 				pixels.setPixelColor(PIXEL_USER+4,r,0,0);
 				pixels.show();
+				DELAY_AFTER_PIXELS_SHOW();
 			#endif
 			handle_obs();
 		}
@@ -509,6 +515,14 @@ void process_act()
 					display(0,"END ACT",0);
 				#endif
 				in_act = false;
+
+				#if WITH_PIXELS
+                    for (int i=0; i<5; i++)
+                        pixels.setPixelColor(PIXEL_USER+i,0,0,0);
+                    pixels.show();
+					DELAY_AFTER_PIXELS_SHOW();
+                #endif
+
 				return;
 			}
 		}
@@ -608,6 +622,7 @@ void process_act()
 				pixels.setPixelColor(i+PIXEL_RIGHT,step->pixels.rr,step->pixels.rg,step->pixels.rb);
 			}
 			pixels.show();
+			DELAY_AFTER_PIXELS_SHOW();
 		#endif
 	}
 	else if (step_type == STEP_TYPE_LOOP)
@@ -675,6 +690,7 @@ void setInsidePixels(uint8_t r, uint8_t g, uint8_t b)
 		for (int i=0; i<PIXEL_USER; i++)
 			pixels.setPixelColor(i,r,g,b);
 		pixels.show();
+		DELAY_AFTER_PIXELS_SHOW();
 	#endif
 }
 
