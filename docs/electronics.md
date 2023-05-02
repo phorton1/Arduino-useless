@@ -43,15 +43,6 @@ I soldered the diodes, capacitor, resistors, and wired JST connector to the boar
 
 ### Main Cicruit Board
 
-The circuit (and software) can optionally use a HMC5883 **compass module**
-so that it can orient itself while spinning, but after some testing, I
-decided it was not worth the extra complexity and cost (and it didn't
-work that well).  So the circuit board I created leaves the slot for
-the compass unpopulated.
-
-It also allows for another servo (the "flag" servo) for future enhancements
-where I might want an additional servo to do something like showing a white
-"surrender" flag.
 
 Here is the schematic for the circuit board:
 
