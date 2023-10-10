@@ -6,7 +6,7 @@
 #include "wheels.h"
 #include "ir.h"
 #include "pixels.h"
-#include "myDebug.h"
+#include <myDebug.h>
 
 #define DEBUG_ACT  		0
 
